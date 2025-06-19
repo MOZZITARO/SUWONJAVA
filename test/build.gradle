@@ -68,7 +68,8 @@ dependencies {
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     
-    
+    // DevTools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     
     
 }
