@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이미지 업로드</title>
+</head>
+<body>
+  <h2>냉장고 재료 등록 - 이미지 업로드</h2>
+  <form method="POST" action="/upload" enctype="multipart/form-data">
+    <input type="file" name="image" accept="image/*" required />
+    <button type="submit">업로드</button>
+  </form>
+  <br>
+  <a href="/">재료 목록으로 돌아가기</a>
+</body>
+</html>

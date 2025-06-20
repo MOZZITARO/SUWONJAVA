@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>내 냉장고 재료 목록</title>
+</head>
+<body>
+  <h2>내 냉장고 재료 목록</h2>
+
+  {% if result %}
+    <ul>
+      {% for item in result %}
+        <li>식재료: {{ item.ingredient }} / 구매일: {{ item.purDate }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>등록된 재료가 없습니다.</p>
+  {% endif %}
+
+  <br>
+  <a href="/upload">➕ 새 재료 이미지 등록</a>
+</body>
+</html>

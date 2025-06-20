@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>식품명 확인 및 등록</title>
+</head>
+<body>
+  <h2>식품 정보 확인</h2>
+  <form method="POST" action="/confirm">
+    <label>식품명:</label><br>
+    <input type="text" name="ingredient" value="{{ ingredient }}" required /><br><br>
+
+    <label>구매일:</label><br>
+    <input type="date" name="pur_date" value="{{ pur_date }}" required /><br><br>
+
+    <button type="submit">최종 등록</button>
+  </form>
+  <br>
+  <a href="/">재료 목록으로 돌아가기</a>
+</body>
+</html>
