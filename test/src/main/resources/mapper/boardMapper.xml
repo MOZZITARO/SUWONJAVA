@@ -1,1 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="test.mapper.boardMapper">
+	
+	<select id="selectPost" resultType="test.dto.postDTO">
+		select * from post
+		where title like concat('%', #{search}, '%') 
+		or content like concat('%', #{search}, '%') or #{search} is null
+		order by reg_date asc limit #{start}, #{pageSize}
+	</select>
+	
+	<select id="selectPostCount" parameterType="String" resultType="int">
+		select count(*) from post where title like concat('%', #{search}, '%') 
+		or content like concat('%', #{search}, '%') or #{search} is null
+	</select>
+	
+	<insert id="insertPost" parameterType="test.dto.postDTO">
+		insert into post (user_no, category, title, content, author, views, reg_date, udt_date) 
+		values (#{user_no}, #{category}, #{title}, #{content}, #{author}, #{views}, #{reg_date}, #{udt_date})
+	</insert>
+	
+	<update id="updatePost" parameterType="long">
+		update post set category = #{category}, title = #{title}, content = #{content}, author = #{author}, upt_date = #{udt_date}
+		where post_id = #{post_id]}
+	</update>
+	
+	<delete id="deletePost" parameterType="long">
+		delete from post where post_id = #{post_id}
+	</delete>
+	
+	<select id="selectPostById"  resultType="test.dto.postDTO">
+		select * from post where post_id = #{post_id}
+	</select>
+	
+	<update id="updateViews" parameterType="long">
+		update post set views = views + 1 where post_id = #{post_id}
+	</update>
+	
+	<select id="selectCommentByPostId" parameterType="long" resultType="test.dto.commentDTO">
+		select * from comment where post_id = #{post_id} order by reg_date asc
+	</select>
+	
+	<insert id="insertComment" parameterType="test.dto.commentDTO">
+		insert into comment (post_id, user_no, author, content, reg_date, upt_date ,parent_id)
+		values (#{post_id}, #{user_no}, #{author}, #{content}, #{reg_date}, #{upt_date}, #{parent_id})
+	</insert>
+	
+	<update id="updateComment" parameterType="test.dto.commentDTO">
+		update comment set content = #{content}, udt_date = #{udt_date}
+		where comment_id = #{comment_id}
+	</update>
+	
+	<delete id="deleteComment" parameterType="test.dto.commentDTO">
+		delete from comment where comment_id = #{comment_id}
+	</delete>
+	
+	<select id="selectCommentById" parameterType="long" resultType="test.dto.commentDTO">
+		select * from comment where comment_id = #{comment_id}
+	</select>
+	
+	<select id="selectFileByPostId" parameterType="long" resultType="test.dto.fileDTO">
+		select * from file where post_id = #{post_id}
+	</select>
+	
+	<select id="selectFileById" parameterType="long" resultType="test.dto.fileDTO">
+		select * from file where file_id = #{file_id}
+	</select>
+	
+	<insert id="insertFile" parameterType="test.dto.fileDTO">
+		insert into file (user_no, post_id, file_name, file_path, file_size, file_type, width, height, thumbnail_path, reg_date, udt_date)
+		values (#{user_no}, #{post_id}, #{file_name}, #{file_path}, #{file_size}, #{file_type}, #{width}, #{height}, #{thumbnail_path}, #{reg_date}, #{udt_date})
+	</insert>
+</mapper>

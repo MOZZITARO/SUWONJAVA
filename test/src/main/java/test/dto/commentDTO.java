@@ -8,11 +8,13 @@ import lombok.Data;
 public class commentDTO {
 	
 	// 댓글 테이블
-	private int comment_id;
-	private int user_no;
+	private Long comment_id;
+	private Long user_no;
+	private String author;
 	private int post_id;
 	private String content;
 	private Date reg_date;
 	private Date udt_date;
+	private Long parent_id;
 	
 }
