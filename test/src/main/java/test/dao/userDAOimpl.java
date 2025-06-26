@@ -29,6 +29,15 @@ public class userDAOimpl implements userDAO{
 	}
 	
 	
-	
+	//컨텐츠 수정
+		@Override
+		public 	int Changepw(userDTO userDTO) {
+	    int changepw = -1;
+			              // selectOne
+	    changepw = SqlSession.update("Aiproject.user.changepw", userDTO);
+	    System.out.println(" 비밀번호 재설정 : " + changepw);
+	    return changepw;
+			
+		}
 	
 }

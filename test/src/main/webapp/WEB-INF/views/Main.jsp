@@ -1,5 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.springframework.security.oauth2.core.user.OAuth2User" %>
+<%@ page import="java.util.Map" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -200,8 +204,85 @@
         	<!-- 숨겨진 파일 입력 (multiple 속성으로 여러 파일 선택 가능) -->
             <input type="file" id="fileInput" class="file-input" multiple>
             
+          <form id="loginout" action="customlogout" method="post">                            
+            <button type="submit">로그아웃</button>
+          </form>
+     
+     
+     <% Object kakaouser = session.getAttribute("kakaoUser"); 
+     Object userObj = session.getAttribute("userInform");
+     if(kakaouser == null && userObj != null && userObj instanceof org.springframework.security.core.userdetails.UserDetails) {
+     
+         org.springframework.security.core.userdetails.UserDetails userDetails = (org.springframework.security.core.userdetails.UserDetails) userObj;
+    	 
+     %>                                
+     <a href="/deletep">탈퇴페이지</a>
+     <h2><%= userDetails.getUsername() %>님, 환영합니다!</h2>
+     <a href="/modifypw">비밀번호 변경</a>
+     
+     <% 
+     
+     } else {
+     
+     %>     
+           
+       <h2>환영합니다, <c:out value="${userInfo.properties.nickname}" default="사용자" /> 님!</h2>
+	<%
+	    }
+	 %>
+
+     
+<%-- <%
+    Object userObj = session.getAttribute("userInform");
+    if (userObj != null && userObj instanceof org.springframework.security.core.userdetails.UserDetails) {
+    	
+        org.springframework.security.core.userdetails.UserDetails userDetails =
+            (org.springframework.security.core.userdetails.UserDetails) userObj;
+        
+%>
+        <h2><%= userDetails.getUsername() %>님, 환영합니다!</h2>
+<%
+    } else {
+%>
+        <p>사용자 정보를 불러올 수 없습니다.</p>
+<%
+    }
+%> --%>
+
+     
+        
+            
+
+
+
+
+
+
+
+     <%--  <!-- 디버깅: 전체 사용자 정보 출력 -->
+    <c:if test="${not empty userInfo}">
+        <h3>전체 사용자 정보:</h3>
+        <pre>${userInfo}</pre>
+        
+        <!-- 여러 가능한 경로로 닉네임 찾기 -->
+        <p>ID: ${userInfo.id}</p>
+        <p>Properties 닉네임: ${userInfo.properties.nickname}</p>
+        <p>Kakao Account 닉네임: ${userInfo.kakao_account.profile.nickname}</p>
+    </c:if>
+    
+    <c:if test="${empty userInfo}">
+        <p>사용자 정보가 없습니다.</p>
+    </c:if>
+             --%>
+            
+            
+            
+            
+            
+            
+            
               <!-- 커스텀 업로드 박스 -->
-            <div class="upload-box" id="uploadBox">
+               <div class="upload-box" id="uploadBox">
                 <div class="upload-content" id="uploadContent">
                     <div class="upload-icon">📷</div>
                     <div class="upload-text">재료 이미지 드롭 (드래그, 업로드 등)</div>

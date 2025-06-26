@@ -3,15 +3,15 @@
   
 <mapper namespace="Aiproject.Login">
 
-	<resultMap id="userResultMap" type="test.dto.userDTO">
-    	<id property="user_no" column="user_no" javaType="java.lang.Long" jdbcType="BIGINT"/>
-    	<result property="user_id" column="user_id" javaType="java.lang.String"/>
-    	<result property="user_name" column="user_name" javaType="java.lang.String"/>
-    	<result property="user_pw" column="user_pw" javaType="java.lang.String"/>
-    	<result property="user_class" column="user_class" javaType="java.lang.int"/>
-    	<result property="reg_date" column="reg_date" javaType="java.lang.Date"/>
-    	<result property="udt_date" column="udt_date" javaType="java.lang.Date"/>
-	</resultMap>
+<!-- 	<resultMap id="userResultMap" type="test.dto.userDTO"> -->
+<!--     	<id property="user_no" column="user_no" javaType="java.lang.Long" jdbcType="BIGINT"/> -->
+<!--     	<result property="user_id" column="user_id" javaType="java.lang.String"/> -->
+<!--     	<result property="user_name" column="user_name" javaType="java.lang.String"/> -->
+<!--     	<result property="user_pw" column="user_pw" javaType="java.lang.String"/> -->
+<!--     	<result property="user_class" column="user_class" javaType="java.lang.int"/> -->
+<!--     	<result property="reg_date" column="reg_date" javaType="java.lang.Date"/> -->
+<!--     	<result property="udt_date" column="udt_date" javaType="java.lang.Date"/> -->
+<!-- 	</resultMap> -->
   
   <select id="UserLogin" resultType="test.dto.userDTO">
   
@@ -34,9 +34,14 @@
   
   
   INSERT INTO users ( user_id, user_pw, user_name, reg_date, udt_date, user_class) 
-  VALUES (#{user_id}, #{user_pw}, #{user_name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+  VALUES (#{user_id}, #{user_pw}, #{user_name}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
   
   </insert>
+  
+  
+  
+  
+  
   
   
   </mapper>

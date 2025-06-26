@@ -169,7 +169,7 @@ public class boardController {
 	}
 	
 	// 글 보기 페이지
-	@GetMapping("/post/{posd_id}")
+	@GetMapping("/post/{post_id}")
 	public String viewPost(@PathVariable Long post_id, Model model, HttpSession session) {
 		
 		postDTO postDto = postService.selectPostById(post_id);
@@ -205,7 +205,7 @@ public class boardController {
 	}
 	
 	// 글 수정
-	@GetMapping("/post/update/{post_id}")
+	@PostMapping("/post/update/{post_id}")
 	public String updatePost(@PathVariable Long post_id, postDTO postDto,
 			@RequestParam("file") MultipartFile[] files, @RequestParam("image") MultipartFile[] images,
 			HttpSession session) throws IOException {
@@ -287,7 +287,7 @@ public class boardController {
 	}
 	
 	// 글 삭제
-	@DeleteMapping("/post/delete/{post_id")
+	@DeleteMapping("/post/delete/{post_id}")
 	public String deletePost(@PathVariable Long post_id, HttpSession session) {
 		Long user_no = (Long) session.getAttribute("user_no");
 		if(user_no == null) {

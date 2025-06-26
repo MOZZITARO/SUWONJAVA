@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" id="WebApp_ID">
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4" id="WebApp_ID">
 	<display-name>test</display-name>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
@@ -13,5 +12,3 @@
 		<welcome-file>default.xhtml</welcome-file>
 	</welcome-file-list>
 </web-app>
-=======
->>>>>>> e5d7888d09e691826ae7e5d86b2c05dffaa96d93
