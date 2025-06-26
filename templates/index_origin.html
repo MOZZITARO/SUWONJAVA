@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>냉장고 채우기</title>
+</head>
+<body>
+  <div class="container">
+
+    <div class="header">
+      냉장고 채우기
+    </div>
+
+    <!--사진로 등록-->
+    <div>
+      <a href="/upload">📷 이미지로 식재료 등록하기</a>
+    </div>
+
+
+    <!-- 식품 등록 폼 -->
+    <div class="form-section">
+      <form method="POST" action="/confirm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ingredient">구매 식재료를 입력하세요</label>
+            <input type="text" id="ingredient" name="ingredient" value="{{ingredient}}" placeholder="예: 바나나" required />
+          </div>
+          <div class="form-group">
+            <label for="pur_date">구매일자</label>
+            <input type="date" id="pur_date" name="pur_date" value="{{pur_date.split('T')[0] if pur_date else ''}}" required />
+          </div>
+        </div>
+      </form>
+
+      <div class="action-button-section">
+        <button type="button" class="btn-register" onclick="registerFood()">등록</button>
+        <button type="button" class="btn-view" onclick="viewFoodList()">조회</button>
+      </div>
+    </div>
+
+    <!-- 식품 목록 테이블 -->
+    <div class="table-container">
+      <div class="table-header">
+        <div><input type="checkbox" id="selectAll" class="checkbox" onchange="toggleAllCheckboxes()"></div>
+        <div>식품명</div>
+        <div>구매일자</div>
+        <div>액션</div>
+      </div>
+    </div>
+
+    {% for item in result %}
+    <div class= "table-row">
+      <div><input type="checkbox" class="item-checkbox"></div>
+      <div>{{item.ingredient}}</div>
+      <div>{{item.purDate.split('T')[0] if item.purDate else ''}}</div>
+      <div><button onclick ="deleteFood({{item.id}})">음식물 버리기</button></div>
+    </div>
+    {%endfor%}
+
+
+    <!-- 하단 버튼 -->
+    <div class="bottom-section">
+      <button class="bottom-btn" onclick="recommendMeal()">
+        냉장고에 있는 식재료로 식단 추천받기
+      </button>
+      <button class="bottom-btn" onclick="checkAvailableRecipes()">
+        식재료 사용 가능 여부 확인하기
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // 오늘 날짜 기본값 설정
+    document.getElementById('pur_date').valueAsDate = new Date();
+
+    function registerFood() {
+      const ingredient = document.getElementById('ingredient').value.trim();
+      const purDate = document.getElementById('pur_date').value;
+
+      if (!ingredient || !purDate) {
+        alert('식재료와 구매일자를 모두 입력해주세요.');
+        return;
+      }
+
+      document.querySelector('form').submit();
+    }
+
+    function viewFoodList() {
+      window.location.reload();
+    }
+
+    function deleteFood(id) {
+      if (confirm('정말로 이 식품을 삭제하시겠습니까?')) {
+        fetch(`/delete/${id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        })
+          .then(response => {
+            if (response.ok) location.reload();
+            else alert('삭제 중 오류가 발생했습니다.');
+          })
+          .catch(() => alert('삭제 중 오류가 발생했습니다.'));
+      }
+    }
+
+    function recommendMeal() {
+      const selectedItems = document.querySelectorAll('.item-checkbox:checked');
+      const selectedIngredients = [];
+
+      selectedItems.forEach(item => {
+        const row = item.closest('.table-row');
+        const ingredient = row.children[1].textContent;
+        selectedIngredients.push(ingredient);
+      });
+
+      if (selectedIngredients.length === 0) {
+        alert('식재료를 선택해주세요.');
+        return;
+      }
+
+      alert(`선택된 식재료: ${selectedIngredients.join(', ')}\n\n식단 추천 기능 실행!`);
+    }
+
+    function checkAvailableRecipes() {
+      const selectedItems = document.querySelectorAll('.item-checkbox:checked');
+      const selectedIngredients = [];
+
+      selectedItems.forEach(item => {
+        const row = item.closest('.table-row');
+        const ingredient = row.children[1].textContent;
+        selectedIngredients.push(ingredient);
+      });
+
+      if (selectedIngredients.length === 0) {
+        alert('식재료를 선택해주세요.');
+        return;
+      }
+
+      alert(`선택된 재료로 만들 수 있는 요리를 확인합니다:\n${selectedIngredients.join(', ')}`);
+    }
+
+    function toggleAllCheckboxes() {
+      const selectAll = document.getElementById('selectAll');
+      document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = selectAll.checked);
+    }
+  </script>
+</body>
+</html>

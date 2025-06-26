@@ -1,0 +1,72 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background: #f9f9f9;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+.account-section, .preference-section {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+input[type=password] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+}
+
+.change { background: #4a90e2; color: white; }
+.cancel { background: #f45; color: white; }
+
+.setting-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  background: #eee;
+  border-radius: 8px;
+  font-size: 1em;
+}
+
+/* 반응형 */
+@media (min-width: 768px) {
+  .container {
+    display: flex;
+    gap: 20px;
+  }
+
+  .account-section, .preference-section {
+    flex: 1;
+  }
+}

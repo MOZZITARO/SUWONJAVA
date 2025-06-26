@@ -27,6 +27,8 @@ repositories {
 
 dependencies {
 	
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
+	
 	// spring boot starter
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -70,6 +72,11 @@ dependencies {
     
     // DevTools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    
+    
+   testImplementation 'org.springframework.boot:spring-boot-starter-test' // 테스트용 의존성
+    
+    
     
     
 }
