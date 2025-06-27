@@ -37,11 +37,20 @@ public class FindController {
 	@Autowired
 	userService userService;
 	
+	// 비밀번호 메일 전송 및 변경 컨트롤러
 	// 메일 입력 폼 페이지
     @RequestMapping("/findpw")
     public String findpw() {
         return "pwreset";
     }
+	
+	
+	@RequestMapping("/changepw")
+	public String changepw(@RequestParam("token") String token, Model model
+                       ) {
+		model.addAttribute("token", token);
+		return "pwchange";
+	}
 	
     // 메일 보내기 로직
     @PostMapping("/send-verification")
@@ -70,7 +79,9 @@ public class FindController {
     	return "Login";
     }
     
- // 비밀번호 재설정 폼 페이지
+    
+    
+    // 비밀번호 재설정 폼 페이지
     @RequestMapping("/modifypw")
     public String modifypw() {
         return "pwchange";
@@ -78,7 +89,7 @@ public class FindController {
     
     
     
-   
+    // 비밀번호 변경 프로세스
     @PostMapping("/changeok")
     public String changeok(@RequestParam String token,
                            @RequestParam("newpw") String newpw,
@@ -99,6 +110,19 @@ public class FindController {
             return "Login";
         }
 
+        // 토큰이 null이거나 비어있는지 확인
+        if (token == null || token.trim().isEmpty()) {
+            System.out.println("❌ 토큰이 null이거나 비어있음");
+            model.addAttribute("error", "토큰이 없습니다.");
+            return "Login";
+        }
+        
+        System.out.println("=== 비밀번호 변경 프로세스 시작 ===");
+        System.out.println("받은 token: [" + token + "]");
+        System.out.println("받은 newpw: [" + newpw + "]");
+        System.out.println("받은 conpw: [" + conpw + "]");
+        
+        
         // 2. 사용자 조회
         User user = passwordResetService.getUserByToken(token);
         if (user == null) {

@@ -12,19 +12,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import test.service.CustomOAuth2UserService;
-import test.service.CustomUserDetailsService;
 
+import test.service.CustomService;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+	
 	@Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private CustomService customService;
 	
 	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-            .userDetailsService(customUserDetailsService)
+            .userDetailsService(customService)
             .passwordEncoder(passwordEncoder());
     }
 	
@@ -34,18 +35,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        .cors().disable()
 	        .csrf()
 	            .ignoringAntMatchers("/customlogout","/findpw", "/send-verification", "/modifypw", "/changeok",
-		                "/joinmain", "/joinprocess", "/changepw", "/newpw", "/Loginaccess")
+		                "/joinmain", "/joinprocess", "/changepw", "/newpw", "/Loginaccess", "/mypage/**", "/mypage")
 	        .and()
 	        .authorizeRequests()
+		        .antMatchers("/deletep", "/deleteok").hasRole("USER")
+	            .antMatchers("/Main").hasRole("USER")
+	            .antMatchers("/modifypw").hasRole("USER")
+	            .antMatchers("/mypage", "/mypage/**").hasRole("USER") 
 	            .antMatchers(
 	                "/", "/loginmain", "/oauth2/**",
 	                "/css/**", "/js/**", "/images/**",
 	                "/findpw", "/send-verification", "/modifypw", "/changeok",
 	                "/joinmain", "/joinprocess", "/changepw", "/newpw"
-	            ).permitAll()
-	            .antMatchers("/deletep", "/deleteok").hasRole("USER")
-	            .antMatchers("/Main").hasRole("USER")
-	            .antMatchers("/modifypw", "/changeok").hasRole("USER")
+	            ).permitAll()           
 	            .anyRequest().authenticated()
 	        .and()
 	        .oauth2Login()

@@ -235,6 +235,12 @@
             <div class="logo-icon">🥗</div>
             FridgeAI
         </div>
+<!-- 디버깅용 - 나중에 제거 -->
+    <div style="background: yellow; padding: 10px; margin: 10px;">
+        <strong>디버깅 정보:</strong><br>
+        토큰 값: [${token}]<br>
+        토큰 존재 여부: ${not empty token ? '존재' : '없음'}
+    </div>
 
         <h1 class="title">비밀번호 재설정</h1>
         <p class="subtitle">새로운 비밀번호를 설정하여 계정을 안전하게 보호하세요</p>
@@ -243,10 +249,10 @@
             ✅ 비밀번호가 성공적으로 변경되었습니다!
         </div>
 
-        <form id="resetForm" action="/changeok" method="post">
-      
+        <form id="resetForm" action="changeok" method="post">
+       ${token} 
          <input type="hidden" name="token" value="${token}">
-          <%-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> --%>
+           <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
             <div class="form-group">
                 <label for="newPassword" class="form-label">새 비밀번호</label>
                 <input 
@@ -310,6 +316,22 @@
     </div>
 
     <script>
+    document.getElementById('resetForm').addEventListener('submit', function(e) {
+        console.log('=== 폼 제출 시작 ===');
+        
+        const formData = new FormData(this);
+        console.log('폼 데이터:');
+        for (let [key, value] of formData.entries()) {
+            console.log(key + ': ' + value);
+        }
+        
+        console.log('Action URL:', this.action);
+        console.log('Method:', this.method);
+        
+        // 잠깐 제출을 막고 확인 (테스트 후 이 줄 제거)
+        // e.preventDefault();
+        // alert('폼 제출 확인 - 콘솔을 확인하세요');
+    });
       /*   const newPasswordInput = document.getElementById('newPassword');
         const confirmPasswordInput = document.getElementById('confirmPassword');
         const submitBtn = document.getElementById('submitBtn');

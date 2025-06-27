@@ -35,7 +35,7 @@ public class userServiceimpl implements userService{
 //       // 조건이 일치하면 쿼리 전달
 //       return login;
 //    }
-////    로그인 실패
+
 //    return null;
 //  }
     

@@ -70,7 +70,7 @@ dependencies {
     
     // DevTools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    
+    implementation 'org.springframework.security:spring-security-taglibs:5.7.2'
     
 }
 

@@ -11,6 +11,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 @Service
 public class MailService {
 
+	
+	// 메일전송 서비스 계층
 	 // MimeMessage (멀티파일)
 	@Autowired
     private JavaMailSender mailSender;

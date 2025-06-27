@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+// 토큰 레포지토리
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Integer> {
 		   
