@@ -13,10 +13,19 @@ import test.repository.IngredientPreferenceRepository;
 import test.entity.UserFood;
 import test.entity.UseIngredient;
 
+
+
+
+
 @RestController
 @RequestMapping("/api/preferences")
 public class ReceiptPreferenceController {
 
+	@RequestMapping("/prefer")
+	public String prefer() {
+	    return "post_view";
+	}
+	
     @Autowired
     private FoodPreferenceRepository foodRepo;
 

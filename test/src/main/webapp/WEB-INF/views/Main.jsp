@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="org.springframework.security.core.userdetails.UserDetails" %>
 <%@ page import="test.service.CustomUserDetail" %>
+<%@ page import="test.controller.User" %>
 <%@ page import="java.util.Map" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -18,18 +19,18 @@
             background-color: #ffffff;
             min-height: 100vh;
             position: relative;
+            background-color: #f6f6f6;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 100px auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* 은은한 바깥 그림자 */
-            position: relative;
-        }
-
+		    .container {
+		    max-width: 1000px; /* 기존 800px → 20% 증가 */
+		    margin: 80px auto; /* 상하 여백은 살짝 줄이거나 그대로 유지 */
+		    background: white;
+		    border-radius: 20px;
+		    padding: 48px; /* 기존 40px → 20% 증가 */
+		    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+		    position: relative;
+		}
         .user-menu {
             position: absolute;
             top: -70px;
@@ -89,23 +90,24 @@
 
         .header h1 {
             color: #667eea;
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 700;
+            margin-bottom:5%;
         }
 
         .header p {
             color: #666;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             line-height: 1.6;
         }
 
         .upload-box {
             border: 3px dashed #ccc;
             border-radius: 15px;
-            padding: 60px 20px;
+            padding: 72px 24px;
             text-align: center;
             background: #fafafa;
-            min-height: 200px;
+            min-height: 240px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -113,29 +115,29 @@
         }
 
         .upload-icon {
-            font-size: 3rem;
+            font-size: 5.4rem;
             color: #ccc;
             margin-bottom: 15px;
         }
 
         .upload-text {
             color: #666;
-            font-size: 1.2rem;
+            font-size: 1.44rem;
             margin-bottom: 10px;
         }
 
         .upload-hint {
             color: #999;
-            font-size: 0.9rem;
+            font-size: 1.08rem;
         }
 
         .btn-primary {
-            padding: 15px 30px;
+            padding: 18px 36px;
             background: #2c3e50;
             color: white;
             border: none;
             border-radius: 25px;
-            font-size: 1.1rem;
+            font-size: 1.32rem;
             font-weight: bold;
             cursor: pointer;
             margin-top: 20px;
@@ -146,41 +148,121 @@
 
 <div class="container">
 
+
     <!-- 마이페이지 드롭다운 -->
-    <div class="user-menu">
-        <div class="dropdown">
-            <button class="dropdown-toggle">마이페이지 ▼</button>
-            <div class="dropdown-content">
+<%-- <div class="user-menu">
+    <div class="dropdown">
+        <div class="dropdown-content">
+            <%
+            Object kakaouser = session.getAttribute("kakaoUser");
+            Object userObj = session.getAttribute("userInform");
+            
+            // 로그인 상태 체크
+            boolean isLoggedIn = false;
+            
+            if (kakaouser != null && kakaouser instanceof Map) {
+                // 카카오 사용자 로그인 상태
+                isLoggedIn = true;
+                Map<String, Object> kakaoMap = (Map<String, Object>) kakaouser;
+                Map<String, Object> props = (Map<String, Object>) kakaoMap.get("properties");
+            %>
                 <p style="margin: 0; font-weight: bold;">
-                    <% 
-                        Object kakaouser = session.getAttribute("kakaoUser"); 
-                        Object userObj = session.getAttribute("userInform");
-                        if (kakaouser == null && userObj instanceof UserDetails) {
-                            UserDetails userDetails = (UserDetails) userObj;
-                            out.print("안녕하세요 " + userDetails.getUsername() + "님");
-                        } else if (kakaouser instanceof Map) {
-                            Map<String, Object> kakaoMap = (Map<String, Object>) kakaouser;
-                            Map<String, Object> props = (Map<String, Object>) kakaoMap.get("properties");
-                            if (props != null && props.get("nickname") != null) {
-                                out.print("안녕하세요 " + props.get("nickname") + "님");
-                            } else {
-                                out.print("안녕하세요 사용자님");
-                            }
-                        }
+                    <%
+                    if (props != null && props.get("nickname") != null && props.get("profileImage") != null) {
+                        out.print("안녕하세요 " + props.get("nickname") + "님");
+                        out.print("<img src='" + props.get("profileImage") + "' alt='프로필' style='width: 30px; height: 30px; border-radius: 50%; margin-left: 8px;'>");
+                    } else {
+                        out.print("안녕하세요 사용자님");
+                    }
                     %>
                 </p>
                 <a href="/memberpage">마이페이지 이동</a>
-                <form action="customlogout" method="post">
+                <form action="customlogout" method="post" style="margin-top: 10px;">
                     <button type="submit">로그아웃</button>
                 </form>
-            </div>
+            <%
+            } else if (userObj != null && userObj instanceof UserDetails) {
+                // 일반 사용자 로그인 상태
+                isLoggedIn = true;
+                UserDetails userDetails = (UserDetails) userObj;
+            %>
+                <p style="margin: 0; font-weight: bold;">
+                    안녕하세요 <%= userDetails.getUsername() %>님
+                </p>
+                <a href="/memberpage">마이페이지 이동</a>
+                <form action="customlogout" method="post" style="margin-top: 10px;">
+                    <button type="submit">로그아웃</button>
+                </form>
+            <%
+            } else {
+                // 로그아웃 상태 - 로그인 버튼만 표시
+            %>
+                <div class="login-section">
+                    <p style="margin: 0 0 10px 0; font-weight: bold; color: #666;">로그인이 필요합니다</p>
+                    <a href="/login" class="login-btn" style="
+                        display: inline-block;
+                        padding: 8px 16px;
+                        background-color: #4CAF50;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 4px;
+                        font-weight: bold;
+                        text-align: center;
+                    ">로그인</a>
+                </div>
+            <%
+            }
+            %>
         </div>
     </div>
+</div> --%>
+
+
+
+<%
+// 디버깅 정보 출력
+System.out.println("=== JSP 디버깅 시작 ===");
+System.out.println("세션 ID: " + session.getId());
+
+// 세션의 모든 속성 확인
+java.util.Enumeration<String> attributeNames = session.getAttributeNames();
+while (attributeNames.hasMoreElements()) {
+    String name = attributeNames.nextElement();
+    Object value = session.getAttribute(name);
+    System.out.println("세션 속성 - " + name + ": " + value);
+}
+
+User user = null;
+try {
+    user = (User) session.getAttribute("user");
+    System.out.println("세션에서 가져온 user: " + user);
+    if (user != null) {
+        System.out.println("user.getUserName(): " + user.getUserName());
+    }
+} catch (Exception e) {
+    System.out.println("세션 접근 오류: " + e.getMessage());
+    e.printStackTrace();
+}
+
+if (user != null && user.getUserName() != null) {
+%>
+    <p>안녕하세요, <%= user.getUserName() %>님</p>
+<%
+} else {
+%>
+    <p>세션에 유저 정보가 없습니다.</p>
+    <p>세션 ID: <%= session.getId() %></p>
+    <p>세션 생성 시간: <%= new java.util.Date(session.getCreationTime()) %></p>
+<%
+}
+%>
+
 
     <!-- 제목 및 설명 -->
     <div class="header">
         <h1>🧊 냉장고 재료 이미지 분석</h1>
         <p>냉장고 재료 이미지를 업로드하면<br>분석하여 조리 가능한 선택지를 제공합니다.</p>
+        
     </div>
 
     <!-- 업로드 박스 -->
@@ -188,7 +270,7 @@
         <div class="upload-icon">📷</div>
         <div class="upload-text">재료 이미지 드롭 (드래그, 업로드 등)</div>
         <div class="upload-hint">클릭하거나 파일을 드래그하여 업로드하세요</div>
-        <button class="btn-primary">조회</button>
+        <button class="btn-primary" onclick="location.href='/imageresult'" style="cursor: pointer;">조회</button>
     </div>
 
 </div>

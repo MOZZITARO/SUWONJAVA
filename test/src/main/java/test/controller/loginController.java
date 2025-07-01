@@ -70,73 +70,7 @@ public class loginController {
 		return "Login";
 	}
 
-	// 로그인 절차
-	@PostMapping("/Loginaccess")
-	public String login(@RequestParam("user_id") String userId, @RequestParam("user_pw") String userPw,
-			HttpServletRequest request, RedirectAttributes redirectAttributes) {
-		System.out.println("로그인 메서드 진입");
-		try {
-			// 1. 인증 토큰 생성
-			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, userPw);
-			System.out.println("토큰 확인용도 : " + authToken);
-
-			// 2. 인증 처리 (UserDetailsService 통해 DB와 대조)
-			Authentication authentication = authenticationManager.authenticate(authToken);
-			System.out.println("인증 확인용도 : " + authentication);
-
-			// 3. 인증 정보 SecurityContext에 저장
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-
-			// 4. 세션에 SecurityContext 저장 (Spring Security용)
-			HttpSession session = request.getSession(true);
-			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-			
-			// 🔥 여기서 상세 디버깅
-	        System.out.println("userDetails 클래스: " + userDetails.getClass().getName());
-	        System.out.println("userDetails instanceof CustomUserDetail: " + (userDetails instanceof CustomUserDetail));
-			
-			session.setAttribute("userInform", userDetails);
-			session.setAttribute("loginType", "local");
-			
-//			if (userDetails instanceof CustomUserDetail) {
-//			    CustomUserDetail customUser = (CustomUserDetail) userDetails;
-//			    String nickname = customUser.getNickname();
-//			    session.setAttribute("nickname", nickname);
-//			    System.out.println("세션에 저장한 닉네임: " + nickname); // 🔥 이 로그 확인
-//			}
-//			
-//			System.out.println("유저정보확인 : " + userDetails);
-//			session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-//					SecurityContextHolder.getContext());
-//			System.out.println("세션 확인용도 : " + session);
-//			System.out.println("로그인 성공: " + userId);
-			
-			 if (userDetails instanceof CustomUserDetail) {
-		            CustomUserDetail customUser = (CustomUserDetail) userDetails;
-		            System.out.println("CustomUserDetail로 캐스팅 성공");
-		            
-		            String nickname = customUser.getNickname();
-		            System.out.println("getNickname() 결과: '" + nickname + "'");
-		            System.out.println("nickname null 체크: " + (nickname == null));
-		            System.out.println("nickname empty 체크: " + (nickname != null && nickname.isEmpty()));
-		            
-		            session.setAttribute("nickname", nickname);
-		            System.out.println("세션에 저장 후 바로 확인: " + session.getAttribute("nickname"));
-		        } else {
-		            System.out.println("❌ CustomUserDetail 인스턴스가 아님!");
-		        }
-			
-			return "redirect:/Main"; 
-
-		} catch (AuthenticationException e) {
-			if (!errorLogged) {
-				System.out.println("로그인 실패: " + e.getMessage());
-				errorLogged = true;
-			}
-			redirectAttributes.addFlashAttribute("error", "아이디 또는 비밀번호가 일치하지 않습니다.");
-			return "redirect:/loginmain"; // 실패 시 다시 로그인 페이지
-		}
-	}
+	
     
 	// 세션 체크 
 	@GetMapping("/session-check")
@@ -257,11 +191,10 @@ public class loginController {
 	// 완전한 로그아웃 처리
 	@RequestMapping("/customlogout")
 	public String logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-		
-		
+
 	    System.out.println("=== 로그아웃 시작 ===");
-	    
-	    // 1. 기존 세션 확인 및 무효화
+
+	    // 1. 기존 세션 확인 및 로그인 타입 확인
 	    HttpSession session = request.getSession(false);
 	    String loginType = null;
 	    
@@ -269,49 +202,61 @@ public class loginController {
 	        String sessionId = session.getId();
 	        System.out.println("기존 세션 ID: " + sessionId);
 	        
+	        // 세션에서 로그인 타입 확인
+	        Object kakaoUser = session.getAttribute("kakaoUser");
+	        Object userInform = session.getAttribute("userInform");
+	        
+	        if (kakaoUser != null) {
+	            loginType = "kakao";
+	            System.out.println("카카오 로그인 사용자 감지");
+	        } else if (userInform != null) {
+	            loginType = "normal";
+	            System.out.println("일반 로그인 사용자 감지");
+	        }
 	        
 	        try {
 	            session.invalidate();
 	            System.out.println("세션 무효화 완료: " + sessionId);
 	        } catch (IllegalStateException e) {
 	            System.out.println("세션이 이미 무효화됨: " + e.getMessage());
-	        
 	        }
 	    }
-	    
-	    
 
-	    
-	    
-	    
-	    
 	    // 2. Spring Security 인증 제거 (중요)
 	    if (authentication != null) {
 	        new SecurityContextLogoutHandler().logout(request, response, authentication);
 	        System.out.println("Spring Security 인증 제거 완료");
 	    }
 
-	    
-	    
-	    
-	    
-	    
-	    // 3. 카카오 로그아웃 URL로 리디렉션
+	    // 3. 쿠키 제거 (선택사항 - 필요시)
+	    Cookie[] cookies = request.getCookies();
+	    if (cookies != null) {
+	        for (Cookie cookie : cookies) {
+	            if ("JSESSIONID".equals(cookie.getName())) {
+	                cookie.setValue("");
+	                cookie.setPath("/");
+	                cookie.setMaxAge(0);
+	                response.addCookie(cookie);
+	                System.out.println("JSESSIONID 쿠키 제거");
+	            }
+	        }
+	    }
+
+	    // 4. 로그인 타입에 따른 리디렉션
 	    if ("kakao".equals(loginType)) {
-	    String clientId = "9b4c237c90a9730aa699691a34248694"; // Kakao REST API 키
-	    String redirectUri = "http://localhost:8080/loginmain"; // 로그아웃 후 이동할 페이지
+	        String clientId = "9b4c237c90a9730aa699691a34248694"; // Kakao REST API 키
+	        String redirectUri = "http://localhost:8080/Main"; // 로그아웃 후 메인 페이지로 이동
 
-	    String kakaoLogoutUrl = "https://kauth.kakao.com/oauth/logout?client_id=" + clientId +
-	            "&logout_redirect_uri=" + redirectUri;
+	        String kakaoLogoutUrl = "https://kauth.kakao.com/oauth/logout?client_id=" + clientId +
+	                "&logout_redirect_uri=" + redirectUri;
 
-	    System.out.println("카카오 로그아웃으로 리디렉션: " + kakaoLogoutUrl);
-	    return "redirect:" + kakaoLogoutUrl;
+	        System.out.println("카카오 로그아웃으로 리디렉션: " + kakaoLogoutUrl);
+	        return "redirect:" + kakaoLogoutUrl;
 	    } else {
-	        System.out.println("일반 로그인 사용자: 로그인 페이지로 이동");
-	        return "redirect:/loginmain";
-	    }    
-	        
-	 }
+	        System.out.println("일반 로그인 사용자 또는 미확인: 메인 페이지로 이동");
+	        return "redirect:/Main";
+	    }
+	}
 	   
 	
 	

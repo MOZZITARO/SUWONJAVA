@@ -21,6 +21,7 @@
             background: white;
             min-height: 100vh;
             padding: 20px;
+            background-color: #f6f6f6;
         }
 
         .container {
