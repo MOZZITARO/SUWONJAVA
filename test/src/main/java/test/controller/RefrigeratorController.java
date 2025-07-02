@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 
 
@@ -53,12 +54,15 @@ public class RefrigeratorController {
         }
     }
 
+
     @GetMapping
-    public List<RefrigeratorResponseDto> getIngredients(
+    public ResponseEntity<Map<String, Object>> getIngredients(
             @RequestParam long userNo,
             @RequestParam(required = false) String ingredient,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate purDate,
-            @RequestParam(defaultValue = "0") String usedCode) {
+            @RequestParam(defaultValue = "0") String usedCode,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "12") int size) {
 
         List<UserRefrigerator> list;
         try {
@@ -75,13 +79,24 @@ public class RefrigeratorController {
                 list = repository.findByUserNoAndUsedCode(userNo, usedCode);
             }
         } catch (Exception e) {
-           
-            return Collections.emptyList();
+            return ResponseEntity.ok(Map.of(
+                "content", Collections.emptyList(),
+                "totalCount", 0
+            ));
         }
 
-        return list.stream()
+        int totalCount = list.size();
+        int fromIndex = Math.max(0, (page - 1) * size);
+        int toIndex = Math.min(fromIndex + size, totalCount);
+
+        List<RefrigeratorResponseDto> pagedList = list.subList(fromIndex, toIndex).stream()
                 .map(item -> new RefrigeratorResponseDto(item.getIndexNo(), item.getIngredient(), item.getPurDate()))
                 .collect(Collectors.toList());
+
+        return ResponseEntity.ok(Map.of(
+                "content", pagedList,
+                "totalCount", totalCount
+        ));
     }
 
     @PutMapping("/{indexNo}")

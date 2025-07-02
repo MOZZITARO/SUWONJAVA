@@ -7,9 +7,7 @@
 	<title>마이페이지</title>
 	<link rel="stylesheet" href="mypageStyle.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
 </head>
-
 <body>
 
 <div class="container">
@@ -20,7 +18,7 @@
 			<label>새 비밀번호<input type="password" name="newPassword"></label>
 			<div class="btn-group">
 				<button class="btn change">변경</button>
-				<button class="btn cancel" type="reset">취소</button>
+				<button class="btn cancel" type="reset">취소</button>ㅠ>
 			</div>
 		</form>
 	</section>

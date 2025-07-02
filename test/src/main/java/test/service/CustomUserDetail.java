@@ -18,9 +18,6 @@ public class CustomUserDetail implements UserDetails {
         this.user = user;
     }
 
-    public User getUser() {              // ✅ 이 메서드를 꼭 추가해야 함!
-        return this.user;
-    }
   
     public Long getUserno() {
         return user.getUserNo();
@@ -36,7 +33,7 @@ public class CustomUserDetail implements UserDetails {
         return user.getUserPw();
     }
     
-    public String getName() {
+    public String getNickname() {
     	
     	
         System.out.println("getNickname 호출됨");

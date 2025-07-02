@@ -1,31 +1,17 @@
 // User.java
 package test.controller;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.*;
 
 
 // 유저용 엔티티
-/*@Getter
-@Setter */
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
-	  private static final long serialVersionUID = 1L;
-	
+@Data
+public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_no") 

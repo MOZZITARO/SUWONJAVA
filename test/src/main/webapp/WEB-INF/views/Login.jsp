@@ -343,16 +343,16 @@ body {
         </div>
         
         <div class="oauth-section">
-         <!--    <h3>소셜 계정으로 로그인하기</h3> -->
+            <h3>소셜 계정으로 로그인하기</h3>
            <button type="button" class="oauth-btn kakao-btn" onclick="location.href='/oauth2/authorization/kakao'">
     		<div class="oauth-icon kakao-icon">K</div>
              카카오로 로그인
            </button>
             
-          <!--   <button type="button" class="oauth-btn naver-btn">
+            <button type="button" class="oauth-btn naver-btn">
                 <div class="oauth-icon naver-icon">N</div>
                 네이버로 로그인
-            </button>   -->         
+            </button>           
         </div>
         
     </div>

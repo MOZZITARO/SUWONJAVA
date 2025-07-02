@@ -31,7 +31,6 @@ spring:
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
-              - profile_image
             client-name: Kakao
         provider:
           kakao:
