@@ -13,10 +13,14 @@ import test.repository.IngredientPreferenceRepository;
 import test.entity.UserFood;
 import test.entity.UseIngredient;
 
+
+
+
+
 @RestController
 @RequestMapping("/api/preferences")
 public class ReceiptPreferenceController {
-
+	
     @Autowired
     private FoodPreferenceRepository foodRepo;
 
@@ -29,7 +33,7 @@ public class ReceiptPreferenceController {
         LocalDateTime now = LocalDateTime.now();
 
         
- 
+        System.out.println("저장할 호불호 음식/식재료: " + dto);
         
         // 선호하는 음식 저장
         if (dto.getLikeFoods() != null) {

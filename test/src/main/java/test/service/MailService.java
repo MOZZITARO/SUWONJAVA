@@ -11,7 +11,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 @Service
 public class MailService {
 
-	 // MimeMessage (멀티파일)
+	
+	// 메일전송 서비스 계층
+	// MimeMessage (멀티파일)
 	@Autowired
     private JavaMailSender mailSender;
 	
@@ -32,6 +34,7 @@ public class MailService {
 			String htmlContent = "<h3>이메일 인증</h3>" +
                     "<p>아래 링크를 클릭하여 이메일을 인증해주세요:</p>" +
                     "<a href='" + verificationLink + "'>인증하기</a>";
+			
 			helper.setText(htmlContent, true);
 			
 			mailSender.send(massage);

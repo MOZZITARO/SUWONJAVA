@@ -3,29 +3,71 @@
         "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
         "http://tiles.apache.org/dtds/tiles-config_3_0.dtd"
 >
-        
+
 
 <tiles-definitions>
     <definition name="baseLayout" template="/WEB-INF/views/layout.jsp">
         <put-attribute name="header" value="/WEB-INF/views/header.jsp" />
         <put-attribute name="body" value="" />
     </definition>
-    <definition name="test" extends="baseLayout">
-        <put-attribute name="body" value="/WEB-INF/views/test.jsp" />
+ 
+    <!-- <definition name="*" extends="baseLayout">
+        <put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
+       </definition> -->
+
+    <definition name="Main" extends="baseLayout">
+        <put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/Main.jsp" />
     </definition>
-    <definition name="index" extends="baseLayout">
-        <put-attribute name="body" value="/WEB-INF/views/index.jsp" />
+
+    <definition name="memberpage" extends="baseLayout">
+        <put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/memberpage.jsp" />
     </definition>
-    <definition name="imageAnalysis" extends="baseLayout">
-        <put-attribute name="body" value="/WEB-INF/views/imageAnalysis.jsp" />
+
+    <definition name="mypage" extends="baseLayout">
+        <put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/mypage.jsp" />
     </definition>
+
     <definition name="chatbot" extends="baseLayout">
+        <put-attribute name="title" value="" />
         <put-attribute name="body" value="/WEB-INF/views/chatbot.jsp" />
     </definition>
-    <definition name="board" extends="baseLayout">
-        <put-attribute name="body" value="/WEB-INF/views/board.jsp" />
+    
+    <definition name="Refrigerator" extends="baseLayout">
+    	<put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/Refrigerator.jsp" />
     </definition>
-    <definition name="login" extends="baseLayout">
-        <put-attribute name="body" value="/WEB-INF/views/login.jsp" />
+    
+    <definition name="userPreferemnce" extends="baseLayout">
+    	<put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/userPreferemnce.jsp" />
     </definition>
+
+    <definition name="Login" template="/WEB-INF/views/Login.jsp" />
+    <definition name="pwreset" template="/WEB-INF/views/pwreset.jsp" />
+    <definition name="join" template="/WEB-INF/views/join.jsp" />
+ 
 </tiles-definitions>
+
+
+<!--     <definition name="test" extends="baseLayout"> -->
+<!--         <put-attribute name="body" value="/WEB-INF/views/test.jsp" /> -->
+<!--     </definition> -->
+<!--     <definition name="index" extends="baseLayout"> -->
+<!--         <put-attribute name="body" value="/WEB-INF/views/index.jsp" /> -->
+<!--     </definition> -->
+<!--     <definition name="imageAnalysis" extends="baseLayout"> -->
+<!--         <put-attribute name="body" value="/WEB-INF/views/imageAnalysis.jsp" /> -->
+<!--     </definition> -->
+<!--     <definition name="chatbot" extends="baseLayout"> -->
+<!--         <put-attribute name="body" value="/WEB-INF/views/chatbot.jsp" /> -->
+<!--     </definition> -->
+<!--     <definition name="board" extends="baseLayout"> -->
+<!--         <put-attribute name="body" value="/WEB-INF/views/board.jsp" /> -->
+<!--     </definition> -->
+<!--     <definition name="login" extends="baseLayout"> -->
+<!--         <put-attribute name="body" value="/WEB-INF/views/login.jsp" /> -->
+<!--     </definition> -->

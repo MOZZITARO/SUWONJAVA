@@ -3,110 +3,99 @@ package test.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.*;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.SecurityFilterChain;
+import test.service.CustomOAuth2UserService;
+import test.controller.CustomLoginSuccessHandler;
+import test.service.CustomService;
 import test.service.CustomUserDetailsService;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.List;
-
-
 
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+	@Autowired
+    private CustomLoginSuccessHandler customLoginSuccessHandler;
+	
+	@Autowired
     private CustomUserDetailsService customUserDetailsService;
-
-    @Override
+	
+	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
             .userDetailsService(customUserDetailsService)
             .passwordEncoder(passwordEncoder());
     }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .cors() // CORS 활성화
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+	    http
+	        .cors().disable()
+	        .csrf()
+	            .ignoringAntMatchers("/customlogout","/findpw", "/send-verification", "/modifypw", "/changeok",
+		                "/joinmain", "/joinprocess", "/changepw", "/newpw", "/Loginaccess", "/mypage/**", "/mypage", "/api/**", "/Reciperesult", "/inputUserRefrigerator/**", "/api/refrigerator/**", "/api/preferences/**", "/delete_ingredient/**", "/update_ingredient/**", "/**")
+	        .and()
+	        .authorizeRequests()
+	        	.antMatchers("/inputUserRefrigerator/**").permitAll()
+		        .antMatchers("/deletep", "/deleteok").hasRole("USER")
+	            .antMatchers("/modifypw").hasRole("USER")
+	            .antMatchers("/Reciperesult").hasRole("USER")
+	            .antMatchers("/mypage", "/mypage/**").hasRole("USER") 
+//	            .antMatchers("/api/preferences", "/api/refrigerator").hasRole("USER")
+	            // 인증 불필요
+                .antMatchers(HttpMethod.POST, "/api/preferences").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/preferences").permitAll()
+                .antMatchers("/delete_ingredient/**").permitAll()
+                .antMatchers("/api/refrigerator/**").permitAll()
+	            .antMatchers(
+	                "/", "/loginmain", "/oauth2/**",  "/Main",
+	                "/css/**", "/js/**", "/images/**",
+	                "/findpw", "/send-verification", "/modifypw", "/changeok",
+	                "/joinmain", "/joinprocess", "/changepw", "/newpw"
+	            ).permitAll()           
+	            .anyRequest().authenticated()
+	        .and()
+	        .oauth2Login()
+	            .loginPage("/loginmain")
+	            .defaultSuccessUrl("/home", true)
+	        .and()
+	        .logout()
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/Main")
+            .deleteCookies("JSESSIONID") 
+            .invalidateHttpSession(true) // 서버 세션 제거
+            .clearAuthentication(true)  // 인증정보 제거
             .and()
-            .csrf().disable() // 필요하면 비활성화
-            .authorizeRequests()
-                .antMatchers(
-                    "/", "/loginmain", "/oauth2/**",
-                    "/css/**", "/js/**", "/images/**",
-                    "/findpw", "/send-verification", "/modifypw", "/changeok",
-                    "/joinmain", "/joinprocess", "/changepw", "/newpw",
-                    "/api/refrigerator/**", // 인증 없이 허용할 API 경로
-                    "/api/preferences"
-                ).permitAll()
-                .antMatchers("/deletep", "/deleteok").hasRole("USER")
-                .antMatchers("/Main").hasRole("USER")
-                .antMatchers("/modifypw", "/changeok").hasRole("USER")
-                .anyRequest().authenticated()
+	        .formLogin()
+            .loginPage("/loginmain")
+            .loginProcessingUrl("/Loginaccess") // POST 요청    
+            .usernameParameter("user_id") // HTML 폼의 실제 필드명
+            .passwordParameter("user_pw")
+            .successHandler(customLoginSuccessHandler)
+            .defaultSuccessUrl("/Main", true)
+            .failureUrl("/loginmain?error=true")
             .and()
-            .exceptionHandling()
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-            .and()
-            .oauth2Login()
-                .loginPage("/loginmain")
-                .defaultSuccessUrl("/home", true)
-            .and()
-            .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/loginmain")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-            .and()
-            .formLogin()
-                .loginPage("/loginmain")
-                .loginProcessingUrl("/Loginaccess")
-                .usernameParameter("user_id")
-                .passwordParameter("user_pw")
-                .defaultSuccessUrl("/Main", true)
-                .failureUrl("/loginmain?error=true")
-            .and()
-            .headers().frameOptions().disable();
-    }
+	        .headers().frameOptions().disable();
+	    
+	}
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-    
-    
-    
-   //시큐리티가 CORS 차단하지 않게 하기 위한 설정
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(List.of("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration);
-        return source;
-    }
-    
-    
     
 }

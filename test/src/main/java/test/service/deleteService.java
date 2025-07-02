@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import test.dao.UserRepo;
 
+// 탈퇴 서비스 구현
 @Service
 @Transactional
 public class deleteService {

@@ -32,7 +32,7 @@ public class DeleteController {
 	    
 	    
 	    
-	    
+	 // 탈퇴 구현 컨트롤러   
 	 // GET 방식으로 변경 (페이지를 보여주는 것이므로)
 	    @GetMapping("/deletep")
 	    public String showDeletePage(
@@ -46,8 +46,6 @@ public class DeleteController {
 	        return "Delete";
 	    }
 	    
-	
-
 	    
 	 // 실제 삭제 처리
 	    @PostMapping("/deleteok")

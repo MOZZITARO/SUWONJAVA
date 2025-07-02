@@ -21,7 +21,7 @@ public class memberController {
 	public String memberpage(
                        ) {
 		
-		
+		System.out.println("memberpage get 접속");
 		
 		return "memberpage";
 	}

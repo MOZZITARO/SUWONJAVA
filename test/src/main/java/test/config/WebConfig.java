@@ -2,14 +2,23 @@ package test.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+	
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/api/**")
+				.allowedOrigins("http://localhost:5000") // flask port
+				.allowedMethods("*")
+				.allowedHeaders("*");
+	}
 	
 	@Bean
 	public TilesConfigurer tilesConfigurer() {
@@ -36,17 +45,8 @@ public class WebConfig implements WebMvcConfigurer {
         return resolver;
     }
     
-    
-    //전역 Cors 설정 클래스 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:5000")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowCredentials(true);
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
-    
-    
-    
-    
 }

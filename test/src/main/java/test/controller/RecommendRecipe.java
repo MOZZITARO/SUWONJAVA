@@ -18,7 +18,7 @@ public class RecommendRecipe {
 			return "DetailRecipe";
 		}
 		
-		
+		// 이미지분석 상세레시피 입구
 		@PostMapping("/Reciperesult")
 		public String Reciperesult() {
 			return "Reciperesult";

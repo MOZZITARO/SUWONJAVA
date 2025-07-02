@@ -208,7 +208,7 @@
         <button type="submit">저장하기</button>
     </form>
 
-    <!-- {% with messages = get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <ul>
                 {% for category, message in messages %}
@@ -218,6 +218,6 @@
                 {% endfor %}
             </ul>
         {% endif %}
-    {% endwith %}d -->
+    {% endwith %}d
 </body>
 </html>
