@@ -10,9 +10,9 @@ import java.time.LocalDate;
 @Data
 public class RefrigeratorDto {
     private Long indexNo;
-    private long userNo; // int -> long
+    private long userNo; 
     private String ingredient;
-    private String UsedCode;
+    private String usedCode;
    
     private LocalDate purDate;
 

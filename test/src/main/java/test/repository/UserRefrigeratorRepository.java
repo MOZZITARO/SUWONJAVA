@@ -1,44 +1,27 @@
 package test.repository;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
 import test.entity.UserRefrigerator;
-
 import java.time.LocalDate;
 import java.util.List;
 
-@Mapper
-public interface UserRefrigeratorRepository {
+public interface UserRefrigeratorRepository extends JpaRepository<UserRefrigerator, Long> {
 
-    List<UserRefrigerator> findByUserNoAndUsedCode(
-            @Param("userNo") long userNo,
-            @Param("usedCode") String usedCode);
+    List<UserRefrigerator> findByUserNo(long userNo);
+	
+	List<UserRefrigerator> findByUserNoAndIngredientAndPurDateAndUsedCode(long userNo, String ingredient, LocalDate purDate, String usedCode);
 
-    List<UserRefrigerator> findByUserNoAndIngredientAndPurDateAndUsedCode(
-            @Param("userNo") long userNo,
-            @Param("ingredient") String ingredient,
-            @Param("purDate") LocalDate purDate,
-            @Param("usedCode") String usedCode);
+    List<UserRefrigerator> findByUserNoAndIngredientAndPurDate(long userNo, String ingredient, LocalDate purDate);
 
-    List<UserRefrigerator> findByUserNoAndIngredientAndUsedCode(
-            @Param("userNo") long userNo,
-            @Param("ingredient") String ingredient,
-            @Param("usedCode") String usedCode);
+    List<UserRefrigerator> findByUserNoAndIngredientAndUsedCode(long userNo, String ingredient, String usedCode);
 
-    List<UserRefrigerator> findByUserNoAndPurDateAndUsedCode(
-            @Param("userNo") long userNo,
-            @Param("purDate") LocalDate purDate,
-            @Param("usedCode") String usedCode);
+    List<UserRefrigerator> findByUserNoAndPurDateAndUsedCode(long userNo, LocalDate purDate, String usedCode);
 
-    // 단일 조회
-    UserRefrigerator selectByIndexNo(@Param("indexNo") long indexNo);
+    List<UserRefrigerator> findByUserNoAndIngredient(long userNo, String ingredient);
 
-    // 삽입
-    int insertUserRefrigerator(UserRefrigerator entity);
+    List<UserRefrigerator> findByUserNoAndPurDate(long userNo, LocalDate purDate);
 
-    // 수정
-    int updateUserRefrigerator(UserRefrigerator entity);
+    List<UserRefrigerator> findByUserNoAndUsedCode(long userNo, String usedCode);
 
-    // 삭제
-    int deleteByIndexNo(@Param("indexNo") long indexNo);
+  
 }

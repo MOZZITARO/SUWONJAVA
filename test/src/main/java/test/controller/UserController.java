@@ -20,26 +20,25 @@ public class UserController {
 	private userService userService;
 	
 	
-	// 메일 링크	
-//	@RequestMapping("/changepw")
-//	public String changepw(@RequestParam("token") String token, Model model
-//                       ) {
-//		model.addAttribute("token", token);
-//		return "pwchange";
-//	}
+		
+	@RequestMapping("/changepw")
+	public String changepw(@RequestParam("token") String token, Model model
+                       ) {
+		model.addAttribute("token", token);
+		return "pwchange";
+	}
 	
 	
-	// 전통적인 비번 변경
-//	@RequestMapping("/newpw")
-//	public String newpw(@ModelAttribute userDTO userdto
-//                       ) {
-//		
-//		
-//		int newpw = userService.Changepw(userdto);
-//		
-//		
-//		return "Login";
-//	}
+	@RequestMapping("/newpw")
+	public String newpw(@ModelAttribute userDTO userdto
+                       ) {
+		
+		
+		int newpw = userService.Changepw(userdto);
+		
+		
+		return "Login";
+	}
 	
 	
 	

@@ -30,7 +30,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import test.dto.userDTO;
 import test.dao.userDAO;
-import test.service.CustomUserDetail;
 import test.service.userService;
 
 @Controller
@@ -51,30 +50,26 @@ public class loginController {
 	@Autowired
 	private userDAO userDAO;
 
-	
-	// 로그인 컨트롤러
-	// 로그인 입구
 	@GetMapping("/loginmain")
 	public String login(HttpServletRequest request) {
-		System.out.println("=== 로그인 페이지 진입 ===");
-	    
-	    HttpSession session = request.getSession(false);
-	    if (session != null) {
-	        System.out.println("⚠️ 로그인 페이지인데 세션이 존재함: " + session.getId());
-	        System.out.println("새 세션인가요? " + session.isNew());
-	    } else {
-	        System.out.println("✅ 세션이 정상적으로 없습니다.");
-	    }
+//		System.out.println("=== 로그인 페이지 진입 ===");
+//	    
+//	    HttpSession session = request.getSession(false);
+//	    if (session != null) {
+//	        System.out.println("⚠️ 로그인 페이지인데 세션이 존재함: " + session.getId());
+//	        System.out.println("새 세션인가요? " + session.isNew());
+//	    } else {
+//	        System.out.println("✅ 세션이 정상적으로 없습니다.");
+//	    }
 		
 			
 		return "Login";
 	}
 
-	// 로그인 절차
 	@PostMapping("/Loginaccess")
 	public String login(@RequestParam("user_id") String userId, @RequestParam("user_pw") String userPw,
 			HttpServletRequest request, RedirectAttributes redirectAttributes) {
-		System.out.println("로그인 메서드 진입");
+
 		try {
 			// 1. 인증 토큰 생성
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, userPw);
@@ -90,42 +85,12 @@ public class loginController {
 			// 4. 세션에 SecurityContext 저장 (Spring Security용)
 			HttpSession session = request.getSession(true);
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-			
-			// 🔥 여기서 상세 디버깅
-	        System.out.println("userDetails 클래스: " + userDetails.getClass().getName());
-	        System.out.println("userDetails instanceof CustomUserDetail: " + (userDetails instanceof CustomUserDetail));
-			
-			session.setAttribute("userInform", userDetails);
-			session.setAttribute("loginType", "local");
-			
-//			if (userDetails instanceof CustomUserDetail) {
-//			    CustomUserDetail customUser = (CustomUserDetail) userDetails;
-//			    String nickname = customUser.getNickname();
-//			    session.setAttribute("nickname", nickname);
-//			    System.out.println("세션에 저장한 닉네임: " + nickname); // 🔥 이 로그 확인
-//			}
-//			
-//			System.out.println("유저정보확인 : " + userDetails);
-//			session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-//					SecurityContextHolder.getContext());
-//			System.out.println("세션 확인용도 : " + session);
-//			System.out.println("로그인 성공: " + userId);
-			
-			 if (userDetails instanceof CustomUserDetail) {
-		            CustomUserDetail customUser = (CustomUserDetail) userDetails;
-		            System.out.println("CustomUserDetail로 캐스팅 성공");
-		            
-		            String nickname = customUser.getNickname();
-		            System.out.println("getNickname() 결과: '" + nickname + "'");
-		            System.out.println("nickname null 체크: " + (nickname == null));
-		            System.out.println("nickname empty 체크: " + (nickname != null && nickname.isEmpty()));
-		            
-		            session.setAttribute("nickname", nickname);
-		            System.out.println("세션에 저장 후 바로 확인: " + session.getAttribute("nickname"));
-		        } else {
-		            System.out.println("❌ CustomUserDetail 인스턴스가 아님!");
-		        }
-			
+			session.setAttribute("userInfo", userDetails);
+			System.out.println("유저정보확인 : " + userDetails);
+			session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+					SecurityContextHolder.getContext());
+			System.out.println("세션 확인용도 : " + session);
+			System.out.println("로그인 성공: " + userId);
 			return "redirect:/Main"; 
 
 		} catch (AuthenticationException e) {
@@ -137,8 +102,7 @@ public class loginController {
 			return "redirect:/loginmain"; // 실패 시 다시 로그인 페이지
 		}
 	}
-    
-	// 세션 체크 
+
 	@GetMapping("/session-check")
 	@ResponseBody
 	public String checkSession(HttpSession session) {
@@ -257,14 +221,10 @@ public class loginController {
 	// 완전한 로그아웃 처리
 	@RequestMapping("/customlogout")
 	public String logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-		
-		
 	    System.out.println("=== 로그아웃 시작 ===");
 	    
 	    // 1. 기존 세션 확인 및 무효화
 	    HttpSession session = request.getSession(false);
-	    String loginType = null;
-	    
 	    if (session != null) {
 	        String sessionId = session.getId();
 	        System.out.println("기존 세션 ID: " + sessionId);
@@ -281,23 +241,13 @@ public class loginController {
 	    
 	    
 
-	    
-	    
-	    
-	    
 	    // 2. Spring Security 인증 제거 (중요)
 	    if (authentication != null) {
 	        new SecurityContextLogoutHandler().logout(request, response, authentication);
 	        System.out.println("Spring Security 인증 제거 완료");
 	    }
 
-	    
-	    
-	    
-	    
-	    
 	    // 3. 카카오 로그아웃 URL로 리디렉션
-	    if ("kakao".equals(loginType)) {
 	    String clientId = "9b4c237c90a9730aa699691a34248694"; // Kakao REST API 키
 	    String redirectUri = "http://localhost:8080/loginmain"; // 로그아웃 후 이동할 페이지
 
@@ -305,14 +255,15 @@ public class loginController {
 	            "&logout_redirect_uri=" + redirectUri;
 
 	    System.out.println("카카오 로그아웃으로 리디렉션: " + kakaoLogoutUrl);
+
 	    return "redirect:" + kakaoLogoutUrl;
-	    } else {
-	        System.out.println("일반 로그인 사용자: 로그인 페이지로 이동");
-	        return "redirect:/loginmain";
-	    }    
 	        
-	 }
+	        
+	    }
 	   
+	
+	
+	
 	
 	
 	// 비밀번호 초기화
@@ -320,7 +271,5 @@ public class loginController {
 	public String pwreset() {
 		return "pwreset";
 	}
-	
-	
 
 }

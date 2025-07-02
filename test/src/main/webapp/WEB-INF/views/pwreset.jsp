@@ -275,7 +275,7 @@ body {
             이메일을 확인해 주세요.
         </div>
         
-         <form id="resetForm" action="send-verification" method="post">
+        <form id="resetForm" action="send-verification" method="post">
             <div class="form-group">
                 <label class="form-label" for="email">이메일 주소</label>
                 <input type="email" id="email" name="email" class="form-input" placeholder="example@naver.com" required>

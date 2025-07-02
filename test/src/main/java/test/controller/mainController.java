@@ -12,17 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class mainController {
 
-	// 로그인 되었을 경우 추가적 절차
-//	@RequestMapping("/Mainhome")
-//	public String join(
-//                       ) {
-//		
-//		
-//		
-//		return "Main";
-//	}
-//	
-	// 로그인 되었을 경우 추가적 절차
+	
+	@RequestMapping("/Mainhome")
+	public String join(
+                       ) {
+		
+		
+		
+		return "Main";
+	}
+	
 	@GetMapping("/Main")
 	public String mainPage(HttpServletRequest request, Authentication authentication) {
 		
@@ -49,17 +48,6 @@ public class mainController {
 	    
 	    return "Main";  // src/main/webapp/WEB-INF/views/Main.jsp (jsp 설정에 따라)
 	}
-	
-	// 마이페이지 이동
-//	@RequestMapping("/memberpage")
-//	public String memberpage(
-//                       ) {
-//		
-//		
-//		
-//		return "memberpage";
-//	}
-//	
 	
 	
 }

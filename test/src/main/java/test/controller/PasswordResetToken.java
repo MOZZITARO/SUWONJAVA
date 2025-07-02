@@ -13,8 +13,6 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
-
-// 토큰 엔티티
 @Entity
 @Table(name = "password_reset_tokens")
 @Data

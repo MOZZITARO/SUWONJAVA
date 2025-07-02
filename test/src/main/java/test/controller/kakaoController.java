@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class kakaoController {
 
-	
-	 // 카카오 로그인 매핑 입구
 	 @RequestMapping("/home")
 	    public String dashboard(Authentication authentication, Model model,  HttpServletRequest request) {
 		 
@@ -96,25 +94,18 @@ public class kakaoController {
 //		    }
 //	        
 	        
-		    HttpSession session = request.getSession();
+		 HttpSession session = request.getSession();
 
 		    if (authentication != null && authentication.isAuthenticated()) {
 		        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-//		        session.setAttribute("kakaoUser", oAuth2User); // ✅ 세션에 저장
-		        
-		     // ⚠ OAuth2User 전체를 저장하지 말고 Map만 저장
-		        session.setAttribute("kakaoUser", oAuth2User.getAttributes());
-		        session.setAttribute("loginType", "kakao");
-
-		        System.out.println("세션에 kakaoUser 저장 완료");
-		    }
+		        session.setAttribute("kakaoUser", oAuth2User); // ✅ 세션에 저장
 
 		        // 디버깅 출력 (선택)
-//		        System.out.println("=== /home 진입: kakaoUser 세션 저장 ===");
-//		        System.out.println(oAuth2User.getAttributes());
-//		    } else {
-//		        System.out.println("인증 정보 없음 또는 인증되지 않음.");
-//		    }
+		        System.out.println("=== /home 진입: kakaoUser 세션 저장 ===");
+		        System.out.println(oAuth2User.getAttributes());
+		    } else {
+		        System.out.println("인증 정보 없음 또는 인증되지 않음.");
+		    }
 	        
 	        return "redirect:/kakaoMain";
 	        
@@ -193,26 +184,15 @@ public class kakaoController {
 		 
 		 
 		    HttpSession session = request.getSession();
-//		    OAuth2User kakaoUser = (OAuth2User) session.getAttribute("kakaoUser");
-		    Map<String, Object> kakaoUser = (Map<String, Object>) session.getAttribute("kakaoUser");
+		    OAuth2User kakaoUser = (OAuth2User) session.getAttribute("kakaoUser");
 
-
-		    
 		    if (kakaoUser != null) {
-		        model.addAttribute("kakaoUser", kakaoUser);
+		        Map<String, Object> attributes = kakaoUser.getAttributes();
+		        // 닉네임 추출 로직 생략
+		        model.addAttribute("kakaoUser", attributes);
 		    } else {
-		        System.out.println("세션에 kakaoUser가 없습니다.");
+		        System.out.println("세션에 kakaoUser가 없습니다."); // 🔥 지금 이 상태
 		    }
-		    
-		    
-		    
-//		    if (kakaoUser != null) {
-//		        Map<String, Object> attributes = kakaoUser.getAttributes();
-//		        // 닉네임 추출 로직 생략
-//		        model.addAttribute("kakaoUser", attributes);
-//		    } else {
-//		        System.out.println("세션에 kakaoUser가 없습니다."); // 🔥 지금 이 상태
-//		    }
 		 
 			return "Main";
 		}

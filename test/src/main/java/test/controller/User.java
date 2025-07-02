@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import lombok.Data;
 import javax.persistence.*;
 
-
-// 유저용 엔티티
 @Entity
 @Table(name = "users")
 @Data

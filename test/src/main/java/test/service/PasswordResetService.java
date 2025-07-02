@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-
-// 비밀번호 변경 서비스 구현 (토큰검증)
 @Service
 @Transactional
 public class PasswordResetService {
@@ -29,8 +27,7 @@ public class PasswordResetService {
     
     public void requestPasswordReset(String UserId) {
         // 이메일로 사용자 조회 (DB 검증)
-        Optional<User> userOpt = userRepo.findByUserId(UserId);        
-        
+        Optional<User> userOpt = userRepo.findByUserId(UserId);
         
         if (userOpt.isPresent()) {
             User user = userOpt.get();
