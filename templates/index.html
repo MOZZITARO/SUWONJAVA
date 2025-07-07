@@ -24,7 +24,7 @@
     }
     .container {
       max-width: 900px;
-      margin: 100px auto 0 auto;
+      margin: 50px auto 0 auto;
       background: #fff;
       padding: 30px 40px;
       border-radius: 12px;
@@ -91,6 +91,8 @@
     .action-button-section {
       margin-top: 20px;
       text-align: right;
+      
+     
     }
     .btn-register, .btn-view, .btn-reset {
       background-color: #3498db;
@@ -112,7 +114,6 @@
       border: 1px solid #ddd;
       border-radius: 10px;
       overflow: hidden;
-      margin-top: 20px;
     }
     .table-header, .table-row {
       display: grid;
@@ -330,7 +331,7 @@
   <div class="container">
     <div class="header">냉장고 채우기</div>
 
-    <a href="/uploadByImage?user_no={{ userNo }}" class="upload-link" tabindex="0">+ 이미지로 식재료 등록하기</a>
+    <a href="/upload/{{ userNo }}" class="upload-link" tabindex="0">+ 이미지로 식재료 등록하기</a>
 
     <div class="form-section">
       <form id="searchForm" onsubmit="return searchFoodList(event)">

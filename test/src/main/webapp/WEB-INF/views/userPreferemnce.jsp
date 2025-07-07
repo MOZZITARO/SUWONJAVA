@@ -7,10 +7,10 @@
     <title>회원별 선호도 페이지</title>
 </head>
 <body>
-    <div class="container">
-        <div class="flask-area">
+   
+       
             <c:out value="${flaskContent}" escapeXml="false" />
-        </div>
-    </div>
+       
+   
 </body>
 </html>

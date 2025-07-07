@@ -8,9 +8,9 @@ spring:
       suffix: .jsp
 
   datasource:
-    url: jdbc:mariadb://localhost:3306/test?useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Seoul
-    username: root
-    password: kirito1013
+    url: jdbc:mariadb://192.168.0.33:3306/test?useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Seoul
+    username: team1
+    password: team1
     driver-class-name: org.mariadb.jdbc.Driver
 
   servlet:

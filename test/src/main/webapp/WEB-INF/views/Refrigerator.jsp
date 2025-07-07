@@ -7,11 +7,11 @@
     <title>냉장고 페이지</title>
 </head>
 <body>
-    <div class="container">
+    
         
-        <div class="flask-area">
+       
             <c:out value="${flaskContent}" escapeXml="false" />
-        </div>
-    </div>
+       
+   
 </body>
 </html>

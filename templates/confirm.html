@@ -12,7 +12,6 @@
       padding: 30px;
       color: #2c3e50;
     }
-
     .container {
       max-width: 500px;
       margin: auto;
@@ -21,25 +20,21 @@
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
     }
-
     h2 {
       margin-bottom: 30px;
       color: #2980b9;
       text-align: center;
     }
-
     form {
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
-
     label {
       font-weight: bold;
       margin-bottom: 6px;
       color: #34495e;
     }
-
     input[type="text"],
     input[type="date"] {
       padding: 14px;
@@ -50,7 +45,6 @@
       width: 100%;
       box-sizing: border-box;
     }
-
     button[type="submit"] {
       background-color: #3498db;
       color: white;
@@ -62,11 +56,9 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-
     button[type="submit"]:hover {
       background-color: #2980b9;
     }
-
     a {
       display: block;
       margin-top: 30px;
@@ -75,7 +67,6 @@
       text-align: center;
       text-decoration: none;
     }
-
     a:hover {
       color: #1d6fa5;
     }
@@ -84,20 +75,29 @@
 <body>
   <div class="container">
     <h2>식품 정보 확인</h2>
-    <form method="POST" action="/confirm/{{user_no}}">
+
+    <form method="POST" action="/confirm/{{ user_no }}">
       <div>
         <label for="ingredient">식품명</label>
-        <input type="text" id="ingredient" name="ingredient" value="{{ ingredient }}" required />
+        <input type="text" id="ingredient" name="ingredient" value="{{ ingredient or '' }}" required />
       </div>
-{{ user_no }}
       <div>
         <label for="purDate">구매일</label>
-        <input type="date" id="purDate" name="purDate" value="{{ purDate }}" required />
+        <input type="date" id="purDate" name="purDate" value="{{ purDate or '' }}" required />
       </div>
-
       <button type="submit">📦 최종 등록</button>
     </form>
-    <a href="/">← 재료 목록으로 돌아가기</a>
+
+  <a href="http://localhost:8080/inputUserRefrigerator?user_no={{ user_no }}">← 재료 목록으로 돌아가기</a>
+
   </div>
+  {% if saved %}
+  <script>
+    alert("저장되었습니다!");
+    window.location.href = "http://localhost:8080/inputUserRefrigerator?user_no={{user_no}}";
+  </script>
+  {% endif %}
+
+
 </body>
 </html>

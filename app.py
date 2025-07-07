@@ -132,6 +132,7 @@ def describe_food_image_in_korean(image_path):
 @app.route("/upload/<int:user_no>", methods=["GET", "POST"])
 def upload(user_no):
     
+
     print(user_no)
     print(f"request.method: {request.method}")
     if request.method == "POST":
@@ -144,10 +145,25 @@ def upload(user_no):
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
             file.save(filepath)
 
+            #제미나이 비전으로 분석        
             label_ko = describe_food_image_in_korean(filepath)
             today = datetime.now().strftime("%Y-%m-%d")
 
-            return redirect(url_for("confirm", ingredient=label_ko, purDate=today, user_no=user_no))
+            #spring에 직접 post 요청
+            data ={
+                "userNo": user_no, 
+                "ingredient": label_ko,
+                "purDate": today    
+            }
+            try:
+                response = requests.post(SPRING_URL, json=data)
+                if response.ok:
+                    return redirect(url_for("confirm", user_no = user_no, ingredient=label_ko, purDate=today ))
+                else: return f"Spring 저장 실패: {response.status_code} {response.text}", 500
+            except Exception as e:
+                logging.error(f"Spring 전송 오류:{e}")
+                return "Spring 전송 중 오류 발생", 500 
+
     return render_template("upload.html", user_no=user_no)
 
 
@@ -155,24 +171,41 @@ def upload(user_no):
 @app.route("/confirm/<int:user_no>", methods=["GET", "POST"])
 def confirm(user_no):
     logging.debug("=== confirm 함수 호출됨 ===")
-    
-    print(user_no)
-    
 
     if request.method == "POST":
         logging.debug("POST 요청 처리 중")
         ingredient = request.form.get("ingredient", "")
         purDate = request.form.get("purDate", "")
-        logging.debug(f"받은 데이터 - user_no: {user_no}, ingredient: {ingredient}, purDate: {purDate}")
-        send_to_spring(user_no, ingredient, purDate)
-        return redirect(url_for("index", user_no=user_no))
-
+       
+        if not ingredient or not purDate:
+            return "재료명과 구매일을 모두 입력해주세요.", 400
+        
+        data = {
+            "userNo": user_no, 
+            "ingredient": ingredient,
+            "purDate": purDate        
+        }
+        
+        try:
+            response = requests.post(SPRING_URL, json=data)
+            if response.ok:
+                return render_template("confirm.html", user_no=user_no, ingredient=ingredient, purDate=purDate, saved=True)
+            else:
+                return f"Spring 저장 실패: {response.status_code} {response.text}", 500
+        except Exception as e:
+            logging.error(f"Spring 전송 오류: {e}")
+            return "Spring 전송 중 오류 발생", 500
+        
+    #get 요청일때 렌더링
     ingredient = request.args.get("ingredient", "")
     purDate = request.args.get("purDate", "")
-    logging.debug(f"GET 파라미터 - ingredient: {ingredient}, purDate: {purDate}, user_no: {user_no}")
-    return render_template("confirm.html", ingredient=ingredient, purDate=purDate, user_no=user_no)
-
-
+    
+    
+    return render_template("confirm.html", user_no=user_no, ingredient=ingredient, purDate=purDate)
+       
+       
+       
+       
 # send_to_spring 함수
 def send_to_spring(user_no, ingredient, purDate):
     logging.debug("=== Spring 전송 시작 ===")
