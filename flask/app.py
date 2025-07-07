@@ -54,7 +54,7 @@ def get_shelf_life_from_gemini(ingredient):
         f"예시1 (잼류): '개봉 후 냉장 보관 시 약 1개월 정도 보관 가능합니다.' (이 경우 30일을 추출)"
         f"예시2 (신선식품): '개봉 후 냉장 보관 시 1일 이내 섭취하는 것이 좋습니다.' (이 경우 1일을 추출)"
         f"예시3: '정보 없음'"
-        f"답변은 오직 이 텍스트로만 구성해 주세요: [Gemini 권장 섭취기간]"
+        f"답변은 오직 이 텍스트로만 구성해 주세요: [Gemini 답변 텍스트]"
     )
     logging.debug(f"Gemini 프롬프트 (정교화): {prompt}")
 
@@ -131,39 +131,25 @@ def describe_food_image_in_korean(image_path):
 # upload 함수
 @app.route("/upload/<int:user_no>", methods=["GET", "POST"])
 def upload(user_no):
-    
 
     print(user_no)
     print(f"request.method: {request.method}")
     if request.method == "POST":
-        
+
         file = request.files.get("image")
-        
+
         if file:
             ext = os.path.splitext(file.filename)[1]
             unique_filename = f"{uuid.uuid4()}{ext}"
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
             file.save(filepath)
 
-            #제미나이 비전으로 분석        
             label_ko = describe_food_image_in_korean(filepath)
             today = datetime.now().strftime("%Y-%m-%d")
 
-            #spring에 직접 post 요청
-            data ={
-                "userNo": user_no, 
-                "ingredient": label_ko,
-                "purDate": today    
-            }
-            try:
-                response = requests.post(SPRING_URL, json=data)
-                if response.ok:
-                    return redirect(url_for("confirm", user_no = user_no, ingredient=label_ko, purDate=today ))
-                else: return f"Spring 저장 실패: {response.status_code} {response.text}", 500
-            except Exception as e:
-                logging.error(f"Spring 전송 오류:{e}")
-                return "Spring 전송 중 오류 발생", 500 
-
+            return redirect(
+                url_for("confirm", ingredient=label_ko, purDate=today, user_no=user_no)
+            )
     return render_template("upload.html", user_no=user_no)
 
 
@@ -172,40 +158,43 @@ def upload(user_no):
 def confirm(user_no):
     logging.debug("=== confirm 함수 호출됨 ===")
 
+    print(user_no)
+
     if request.method == "POST":
-        logging.debug("POST 요청 처리 중")
+        logging.debug("POST 요청: 저장하지 않고 통과")
         ingredient = request.form.get("ingredient", "")
         purDate = request.form.get("purDate", "")
-       
+
         if not ingredient or not purDate:
             return "재료명과 구매일을 모두 입력해주세요.", 400
-        
-        data = {
-            "userNo": user_no, 
-            "ingredient": ingredient,
-            "purDate": purDate        
-        }
-        
+
+        data = {"userNo": user_no, "ingredient": ingredient, "purDate": purDate}
+
         try:
             response = requests.post(SPRING_URL, json=data)
             if response.ok:
-                return render_template("confirm.html", user_no=user_no, ingredient=ingredient, purDate=purDate, saved=True)
+                return render_template(
+                    "confirm.html",
+                    user_no=user_no,
+                    ingredient=ingredient,
+                    purDate=purDate,
+                    saved=True,
+                )
             else:
                 return f"Spring 저장 실패: {response.status_code} {response.text}", 500
         except Exception as e:
             logging.error(f"Spring 전송 오류: {e}")
             return "Spring 전송 중 오류 발생", 500
-        
-    #get 요청일때 렌더링
+
+    # get 요청일때 렌더링
     ingredient = request.args.get("ingredient", "")
     purDate = request.args.get("purDate", "")
-    
-    
-    return render_template("confirm.html", user_no=user_no, ingredient=ingredient, purDate=purDate)
-       
-       
-       
-       
+
+    return render_template(
+        "confirm.html", user_no=user_no, ingredient=ingredient, purDate=purDate
+    )
+
+
 # send_to_spring 함수
 def send_to_spring(user_no, ingredient, purDate):
     logging.debug("=== Spring 전송 시작 ===")
@@ -391,6 +380,7 @@ def index(user_no, ingredient=None, pur_date=None):
     )
 
 
+# can_eat 함수
 @app.route("/can_eat", methods=["POST"])
 def can_eat():
     today = datetime.today().date()
@@ -435,11 +425,11 @@ def can_eat():
                 purchase_date = datetime.strptime(purchase_date, "%Y-%m-%d").date()
             elif isinstance(purchase_date, datetime):
                 purchase_date = purchase_date.date()
-                
+
             shelf_life_days, display_info = get_shelf_life_from_gemini(name)
 
             if shelf_life_days is not None and shelf_life_days >= 0:
-                expiry_date = purchase_date + timedelta(days=shelf_life_days)  # .date() 제거
+                expiry_date = purchase_date + timedelta(days=shelf_life_days)
                 delta = (expiry_date - today).days
 
                 if delta <= 0:
@@ -464,11 +454,10 @@ def can_eat():
 
     return jsonify({"results": results})
 
+
 # preference 블루프린트 등록
 app.register_blueprint(preference_bp)
 
 # 애플리케이션 실행
 if __name__ == "__main__":
     app.run(debug=True)
-    
-    

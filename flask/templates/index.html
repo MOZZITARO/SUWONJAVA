@@ -628,14 +628,118 @@ function renderTable(data) {
     });
   });
 
-  // 식단 추천
+  // 식단 추천 aaaaaaaa
   function recommendMeal() {
+    // 1. 체크된 모든 재료의 이름을 배열로 수집
+    const selectedIngredients = [...document.querySelectorAll('.item-checkbox:checked')].map(
+      (checkbox) => checkbox.closest('.table-row').children[1].textContent.trim()
+    );
+
+    if (selectedIngredients.length === 0) {
+        alert('추천받을 식재료를 하나 이상 선택해주세요.');
+        return;
+    }
+
+    // 로딩 중임을 사용자에게 알림
+    alert(`선택된 식재료: ${selectedIngredients.join(', ')}\n\nAI가 최적의 레시피를 찾고 있습니다. 잠시만 기다려주세요...`);
+
+    // 2. 선택된 재료 배열을 쉼표로 구분된 문자열로 변환
+    const ingredientsString = selectedIngredients.join(',');
+
+    const userNo = document.body.dataset.userNo;
+    if(!userNo) {
+      alert('사용자 정보가 없습니다. 다시 로그인해주세요.');
+      return;
+    }
+
+    // FAST API로 보낼 데이터
+    const bodyPayload = new URLSearchParams();
+    bodyPayload.append('selected_ingredients', ingredientsString);
+    bodyPayload.append('user_no', userNo);
+
+    // 3. FastAPI 서버로 직접 데이터 전송
+    fetch('http://localhost:8000/recipe_from_refrigerator/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: bodyPayload
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`레시피 추천 서버 오류: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            alert(`오류: ${data.error}`);
+            return;
+        }
+
+        if (Array.isArray(data.recipe) && data.recipe.length > 0) {
+            const recommendedRecipe = data.recipe[0];
+            const recipeId = recommendedRecipe.recipe_id;
+
+            alert(`'${recommendedRecipe.name}' 레시피를 추천합니다! 상세 페이지로 이동합니다.`);
+
+            // Spring Boot의 레시피 상세 페이지로 이동
+            window.location.href = `/recipeDetail?recipeId=${recipeId}`;
+        } else {
+            alert('아쉽지만 선택하신 재료로 추천할 만한 레시피를 찾지 못했어요. 😥');
+        }
+    })
+    .catch(error => {
+        console.error('식단 추천 기능 오류:', error);
+        alert('레시피를 추천받는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    });
+}
+
+
+  
+  /* function recommendMeal11() {
     const selected = [...document.querySelectorAll('.item-checkbox:checked')].map(
       (cb) => cb.closest('.table-row').children[1].textContent.trim()
     );
-    if (!selected.length) return alert('식재료를 선택해주세요.');
+    if (selected.length == 0) {
+      alert('추천받을 식재료를 하나 이상 선택해주세요.');
+      return;
+    }
     alert(`선택된 식재료: ${selected.join(', ')}\n\n식단 추천 실행!`);
+
+    const ingredientsString = selected.join(', ');
+
+    fetch('http://localhost:8000/recipe_from_refrigerator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'selected_ingredients=' + encodeURIComponent(ingredientsString)
   }
+  .then((response) => {
+      if (!response.ok) {
+        throw new Error(`레시피 추천 서버 오류: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.error) {
+        alert(`오류: ${data.error}`);
+        return;
+      }
+      if (Array.isArray(data.recipe) && data.recipe.length > 0) {
+        const recommendRecipe = data.recipe[0];
+        const recipeId = recommendRecipe.recipe_id;
+        
+        alert(` '${recommendRecipe.name}' 레시피를 추천합니다! 상세 페이지로 이동합니다.`);
+        window.location.href = `/recipeDeatail?recipeId=${recipeId}`;
+      } else {
+        alert('아쉽지만 선택하신 재료로 추천할 만한 레시피를 찾지 못했어요. 😥');
+      }
+    })
+    .catch((error) => {
+      console.error('레시피 추천 기능 오류:', error);
+      alert('레시피 추천 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }); 
+  } */
 
   // 사용 가능 여부 확인
   function checkAvailableRecipes() {

@@ -70,8 +70,11 @@
     <h2>냉장고 재료 등록 - 이미지 업로드</h2>
     <p>사용자 번호: {{ user_no }}</p>
     <form method="POST" action="http://localhost:5000/upload/{{ user_no }}" enctype="multipart/form-data">
-<!--<form method="POST" action="/upload/{{ user_no }}" enctype="multipart/form-data">-->
+    <!--<form method="POST" action="/upload/{{ user_no }}" enctype="multipart/form-data">-->
       <input type="file" name="image" accept="image/*" required />
       <button type="submit" class="btn-upload">📤 업로드</button>
     </form>
     <a href="http://localhost:8080/inputUserRefrigerator?user_no={{ user_no }}">← 재료 목록으로 돌아가기</a>
+  </div>
+</body>
+</html>
