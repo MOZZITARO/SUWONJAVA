@@ -16,7 +16,6 @@ public class deleteService {
     private UserRepo userRepo;
     
     public void deleteUser(Long userNo) {
-    	  
         userRepo.deleteById(userNo); 
     }
 }

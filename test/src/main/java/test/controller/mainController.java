@@ -66,6 +66,7 @@ public class mainController {
 	        if (kakaoUser != null) {
 	            System.out.println("카카오 사용자 세션 정보 확인됨");
 	        }
+	        
 	    } else {
 	        System.out.println("비로그인 사용자 - 메인 페이지 접근");
 	    }

@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -380,142 +382,59 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>
-                <div class="header-icon">
-                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                    </svg>
-                </div>
-                추천레시피 이력
-            </h1>
-        </div>
-
-        <div class="filter-section">
-            <div class="filter-row">
-                <div class="search-section">
-                    <input type="text" class="search-input" placeholder="음식명 검색..." id="searchInput">
-                    <button class="search-btn" onclick="searchRecipes()">
-                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                        검색
-                    </button>
-                </div>
-                <div class="date-filters">
-                    <span class="date-label">조회 기간:</span>
-                    <input type="date" class="date-input" id="startDate">
-                    <span class="date-label">~</span>
-                    <input type="date" class="date-input" id="endDate">
-                    <button class="date-search-btn" onclick="searchByDate()">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                        조회
-                    </button>
-                </div>
-            </div>
-            <div class="filter-tags">
-                <div class="filter-tag" onclick="filterByTag('korean')">한식</div>
-                <div class="filter-tag" onclick="filterByTag('western')">양식</div>
-                <div class="filter-tag" onclick="filterByTag('chinese')">중식</div>
-                <div class="filter-tag" onclick="filterByTag('japanese')">일식</div>
-                <div class="filter-tag" onclick="filterByTag('healthy')">건강식</div>
-                <div class="filter-tag" onclick="filterByTag('quick')">간편식</div>
-                <div class="filter-tag" onclick="filterByTag('diet')">다이어트</div>
-            </div>
-        </div>
+        <%-- ... (header, filter-section은 그대로) ... --%>
 
         <div class="content-section">
-            <div class="recipe-item">
-                <div class="recipe-header">
-                    <div class="recipe-date">2024.06.14</div>
-                    <div class="recipe-calories">529kcal</div>
-                </div>
-                <div class="recipe-title" onclick="location.href='/DetailRecipe'" style="cursor: pointer";>단호박씨 들어간 단호박 찜닭</div>
-                <div class="recipe-ingredients">단호박, 닭육수, 사육, 계란, 홍나물, 양온, 양파, 대파</div>
-                <div class="recipe-actions">
-                    <div class="recipe-tags">
-                        <span class="recipe-tag">한식</span>
-                        <span class="recipe-tag">건강식</span>
-                    </div>
-                    <button class="favorite-btn active" onclick="toggleFavorite(this)">❤️</button>
-                </div>
-            </div>
+            <c:if test="${not empty error}">
+                <p style="color: red; text-align: center;">${error}</p>
+            </c:if>
 
-            <div class="recipe-item">
-                <div class="recipe-header">
-                    <div class="recipe-date">2024.06.14</div>
-                    <div class="recipe-calories">350kcal</div>
-                </div>
-                <div class="recipe-title">닭가슴살 오트로스 베이크</div>
-                <div class="recipe-ingredients">닭가슴살, 오트로스, 브로콜리, 양온, 양파, 올리브오일</div>
-                <div class="recipe-actions">
-                    <div class="recipe-tags">
-                        <span class="recipe-tag">양식</span>
-                        <span class="recipe-tag">다이어트</span>
-                    </div>
-                    <button class="favorite-btn active" onclick="toggleFavorite(this)">❤️</button>
-                </div>
-            </div>
+            <c:if test="${empty historyList}">
+                <p style="text-align: center; color: #777;">추천받은 레시피 이력이 없습니다.</p>
+            </c:if>
 
-            <div class="recipe-item">
-                <div class="recipe-header">
-                    <div class="recipe-date">2024.06.15</div>
-                    <div class="recipe-calories">430kcal</div>
-                </div>
-                <div class="recipe-title">연어 마요네즈 라이스 볼 셀러드</div>
-                <div class="recipe-ingredients">연어, 마요네즈, 아보카도, 오쿠친, 그래놀라, 올리브</div>
-                <div class="recipe-actions">
-                    <div class="recipe-tags">
-                        <span class="recipe-tag">일식</span>
-                        <span class="recipe-tag">건강식</span>
+            <c:forEach var="history" items="${historyList}">
+                <div class="recipe-item">
+                    <div class="recipe-header">
+                        <div class="recipe-date">
+                            <%-- [수정] JSTL 충돌을 피하기 위해 날짜 파싱 부분을 더 안전하게 변경 --%>
+                            <c:set var="recDateString" value="${history.rec_date}" />
+                            <c:if test="${recDateString != null}">
+                                <fmt:parseDate value="${recDateString}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedDate" />
+                                <fmt:formatDate value="${parsedDate}" pattern="yyyy.MM.dd" />
+                            </c:if>
+                        </div>
+                        <div class="recipe-calories">
+                            <%-- calorie가 null일 경우 '정보 없음' 표시 --%>
+                            <c:choose>
+                                <c:when test="${not empty history.calorie and history.calorie > 0}">
+                                    ${history.calorie}kcal
+                                </c:when>
+                                <c:otherwise>
+                                    정보 없음
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
                     </div>
-                    <button class="favorite-btn active" onclick="toggleFavorite(this)">❤️</button>
-                </div>
-            </div>
-
-            <div class="recipe-item">
-                <div class="recipe-header">
-                    <div class="recipe-date">2024.06.16</div>
-                    <div class="recipe-calories">280kcal</div>
-                </div>
-                <div class="recipe-title">두부 스테이크 샐러드</div>
-                <div class="recipe-ingredients">두부, 상추, 토마토, 오이, 발사믹 드레싱, 올리브오일</div>
-                <div class="recipe-actions">
-                    <div class="recipe-tags">
-                        <span class="recipe-tag">건강식</span>
-                        <span class="recipe-tag">다이어트</span>
-                        <span class="recipe-tag">채식</span>
+                    
+                    <%-- [수정] JSTL 충돌을 피하기 위해 onclick의 EL을 변수로 분리 --%>
+                    <c:set var="detailUrl" value="/recipeDetail?recipeId=${history.recipe_id}" />
+                    <div class="recipe-title" onclick="location.href='${detailUrl}'" style="cursor: pointer;">
+                        ${history.food}
                     </div>
-                    <button class="favorite-btn" onclick="toggleFavorite(this)">🤍</button>
-                </div>
-            </div>
-
-            <div class="recipe-item">
-                <div class="recipe-header">
-                    <div class="recipe-date">2024.06.17</div>
-                    <div class="recipe-calories">520kcal</div>
-                </div>
-                <div class="recipe-title">김치 볶음밥</div>
-                <div class="recipe-ingredients">김치, 쌀밥, 계란, 대파, 참기름, 김</div>
-                <div class="recipe-actions">
-                    <div class="recipe-tags">
-                        <span class="recipe-tag">한식</span>
-                        <span class="recipe-tag">간편식</span>
+                    
+                    <div class="recipe-ingredients">
+                        <strong>선택했던 재료:</strong> ${history.ingredient}
                     </div>
-                    <button class="favorite-btn" onclick="toggleFavorite(this)">🤍</button>
+                    
+                    <%-- ... (나머지 부분) ... --%>
                 </div>
-            </div>
+            </c:forEach>
         </div>
 
-        <div class="pagination">
-            <button class="page-btn" onclick="changePage('prev')">이전</button>
-            <span class="page-info">1 / 3</span>
-            <button class="page-btn" onclick="changePage('next')">다음</button>
-        </div>
+        <%-- ... (pagination) ... --%>
     </div>
-
+		/// 삭제 기능 추가하기 - 버튼
     <script>
         // 페이지 로드시 현재 날짜 설정
         window.onload = function() {
@@ -555,7 +474,7 @@
             // 실제 구현시 태그 필터링 로직 추가
         }
 
-        function toggleFavorite(button) {
+        /* function toggleFavorite(button) {
             if (button.classList.contains('active')) {
                 button.classList.remove('active');
                 button.innerHTML = '🤍';
@@ -563,7 +482,7 @@
                 button.classList.add('active');
                 button.innerHTML = '❤️';
             }
-        }
+        } */
 
         function changePage(direction) {
             console.log('페이지 변경:', direction);

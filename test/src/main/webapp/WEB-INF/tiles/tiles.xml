@@ -30,6 +30,11 @@
         <put-attribute name="title" value="" />
         <put-attribute name="body" value="/WEB-INF/views/mypage.jsp" />
     </definition>
+    
+    <definition name="RecommendRecipe" extends="baseLayout">
+        <put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/RecommendRecipe.jsp" />
+    </definition>
 
     <definition name="chatbot" extends="baseLayout">
         <put-attribute name="title" value="" />
@@ -44,6 +49,16 @@
     <definition name="userPreferemnce" extends="baseLayout">
     	<put-attribute name="title" value="" />
         <put-attribute name="body" value="/WEB-INF/views/userPreferemnce.jsp" />
+    </definition>
+    
+    <definition name="recipeResult" extends="baseLayout">
+    	<put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/recipeResult.jsp" />
+    </definition>
+    
+    <definition name="Delete" extends="baseLayout">
+    	<put-attribute name="title" value="" />
+        <put-attribute name="body" value="/WEB-INF/views/Delete.jsp" />
     </definition>
 
     <definition name="Login" template="/WEB-INF/views/Login.jsp" />

@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        .cors().disable()
 	        .csrf()
 	            .ignoringAntMatchers("/customlogout","/findpw", "/send-verification", "/modifypw", "/changeok",
-		                "/joinmain", "/joinprocess", "/changepw", "/newpw", "/Loginaccess", "/mypage/**", "/mypage", "/api/**", "/Reciperesult", "/inputUserRefrigerator/**", "/api/refrigerator/**", "/api/preferences/**", "/delete_ingredient/**", "/update_ingredient/**", "/**")
+	            		"/chat","/recipeDetail","/predictImageRecipe1", "/recipeResult", "/predictImageRecipe","/joinmain", "/joinprocess", "/changepw", "/newpw", "/Loginaccess", "/mypage/**", "/mypage", "/api/**", "/Reciperesult", "/inputUserRefrigerator/**", "/api/refrigerator/**", "/api/preferences/**", "/delete_ingredient/**", "/update_ingredient/**", "/**")
 	        .and()
 	        .authorizeRequests()
 	        	.antMatchers("/inputUserRefrigerator/**").permitAll()
@@ -56,10 +56,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/delete_ingredient/**").permitAll()
                 .antMatchers("/api/refrigerator/**").permitAll()
 	            .antMatchers(
-	                "/", "/loginmain", "/oauth2/**",  "/Main",
+	                "/", "/loginmain", "/oauth2/**",  "/Main", "/chat",
 	                "/css/**", "/js/**", "/images/**",
 	                "/findpw", "/send-verification", "/modifypw", "/changeok",
-	                "/joinmain", "/joinprocess", "/changepw", "/newpw"
+	                "/joinmain", "/joinprocess", "/changepw", "/newpw",
+	                "/recipeResult", "/predictImageRecipe", "/predictImageRecipe1", "/recipeDetail"
 	            ).permitAll()           
 	            .anyRequest().authenticated()
 	        .and()

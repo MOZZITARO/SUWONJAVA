@@ -35,7 +35,7 @@ public class pageController {
 		System.out.println("user_no: " + user_no);
 		
 		System.out.println("Authentication isAuthenticated: " + (auth != null && auth.isAuthenticated()));
-	    System.out.println("Principal: " + (auth != null ? auth.getPrincipal() : "null"));
+	    System.out.println("Principal: " + auth != null ? auth.getPrincipal() : "null");
 		
 		String flaskUrl = "http://localhost:5000/inputUserRefrigerator/" + user_no;
         String flaskResponse = restTemplate.getForObject(flaskUrl, String.class);
@@ -43,7 +43,7 @@ public class pageController {
         System.out.println(flaskResponse);
         
         model.addAttribute("flaskContent", flaskResponse);
-        model.addAttribute("user_no", user_no);
+        model.addAttribute("userNo", user_no);
         return "Refrigerator"; // Tiles 레이아웃이 적용된 JSP
 	}
 	
@@ -55,7 +55,7 @@ public class pageController {
 		System.out.println("user_no: " + user_no);
 		
 		System.out.println("Authentication isAuthenticated: " + (auth != null && auth.isAuthenticated()));
-	    System.out.println("Principal: " + (auth != null ? auth.getPrincipal() : "null"));
+	    System.out.println("Principal: " + auth != null ? auth.getPrincipal() : "null");
 		
 		String flaskUrl = "http://localhost:5000/preference/" + user_no;
         String flaskResponse = restTemplate.getForObject(flaskUrl, String.class);
@@ -92,6 +92,7 @@ public class pageController {
             
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             
+            String flaskUrl = "http://localhost:5000/upload/" + user_no;
             ResponseEntity<String> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, String.class);
             
             if (response.getStatusCode().is2xxSuccessful()) {

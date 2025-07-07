@@ -55,6 +55,7 @@ public class PasswordResetService {
         }
         // 이메일이 없어도 예외를 던지지 않음 (보안상 이유)
     }
+    
     public boolean isTokenValid(String token) {
         Optional<PasswordResetToken> resetToken = tokenRepository.findByTokenId(token);
         System.out.println("토큰확인: " + token);

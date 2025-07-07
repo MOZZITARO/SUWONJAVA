@@ -124,7 +124,7 @@ margin-top: 10px;
     <div style="display: flex; align-items: center; gap: 30px;">
         <div class="tile" onclick="location.href='${pageContext.request.contextPath}/Main'" id="logo"><h3>🧊 FrostAI</h3></div>
         <div class="tile menu-item" onclick="location.href='${pageContext.request.contextPath}/Main'">이미지 분석</div>
-        <div class="tile menu-item" onclick="location.href='${pageContext.request.contextPath}/chatbot'">챗봇과 대화</div>
+        <div class="tile menu-item" onclick="location.href='${pageContext.request.contextPath}/chat'">챗봇과 대화</div>
         <div class="tile menu-item" onclick="location.href='${pageContext.request.contextPath}/board'">게시판</div>
     </div>
 

@@ -246,13 +246,13 @@ input[type="password"]:focus {
 		<div class="section">
 			<h3>취향 설정</h3>
 			<div class="card-list">
-
-				<div class="card" onclick="location.href='/RecommendRecipe'"
+				<% if (customUser != null) { %>
+				<div class="card" onclick="location.href='/user/recipe-history?user_no=<%= customUser.getUserno() %>'"
 					style="cursor: pointer;">
 					<div class="card-title">대화 이력보기</div>
 					<div class="card-desc">이전 레시피 내역을 확인할 수 있습니다</div>
 				</div>
-
+				<% } %>
 
 				<% if (customUser != null) { %>
 				<div class="card" onclick="window.location.href='/inputUserPreference?user_no=<%= customUser.getUserno() %>'"

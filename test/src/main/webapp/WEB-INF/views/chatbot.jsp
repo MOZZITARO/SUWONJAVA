@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -313,6 +316,24 @@
             color: white;
             transform: translateY(-1px);
         }
+        
+        .detail-view-btn {
+    		background-color: #667eea;
+		    color: white;
+		    border: none;
+		    border-radius: 12px;
+		    padding: 8px 12px;
+		    font-size: 0.9rem;
+		    font-weight: 500;
+		    margin-top: 10px;
+		    cursor: pointer;
+		    transition: background-color 0.2s;
+		    display: inline-block;
+		}
+
+		.detail-view-btn:hover {
+		    background-color: #5a67d8;
+		}
 
         @media (max-width: 1200px) {
             .feature-cards {
@@ -477,20 +498,33 @@
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             if (!message) return;
-            
-            addMessage(message, 'user');
+
+            addMessage(message, 'user', null);
             input.value = '';
-            
-            // 시뮬레이션된 AI 응답
-            setTimeout(() => {
-                let response;
-                if (currentAuth === 'member') {
-                    response = "취향을 고려해서 완벽한 레시피를 찾고 있어요... 🔍<br><br>당신의 선호도와 저장된 정보를 바탕으로 맞춤 레시피를 준비해드릴게요!";
-                } else {
-                    response = "좋은 재료들이네요! 🥕<br><br>이 재료들로 만들 수 있는 몇 가지 레시피를 찾고 있어요. 잠시만 기다려주세요...";
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'message=' + encodeURIComponent(message)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`서버 오류: ${response.status}`);
                 }
-                addMessage(response, 'bot');
-            }, 1000);
+                return response.json();
+            })
+            .then(data => {
+                // [핵심 수정] 'response'가 아닌 'data'를 사용합니다.
+                // data.message 와 data.recipe 로 접근해야 합니다.
+                addMessage(data.message, 'bot', data.recipe); 
+            })
+            .catch(error => {
+                // .then() 블록에서 에러가 발생하면 여기가 실행됩니다.
+                console.error('sendMessage에서 오류 발생:', error);
+                addMessage('죄송합니다, 답변을 처리하는 중 오류가 발생했어요.', 'bot', null);
+            });
         }
         
         function quickSend(message) {
@@ -498,24 +532,89 @@
             sendMessage();
         }
         
-        function addMessage(text, sender) {
+        function addMessage(text, sender, recipe) { // recipe 객체를 인자로 추가
+        	
+        	if (sender === 'bot') {
+                console.log("addMessage 함수가 받은 recipe 객체:", recipe);
+            }
+        	
             const messagesContainer = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
             
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'message-bubble';
-            bubbleDiv.innerHTML = text;
+            
+            // XSS 방지를 위해 textContent 사용 권장
+            const textNode = document.createElement('p');
+            textNode.textContent = text;
+            bubbleDiv.appendChild(textNode);
+            
+            
+            // *** 핵심 로직: recipe 객체가 있으면 '자세히 보기' 버튼 추가 ***
+            if (sender === 'bot' && recipe && recipe.recipe_id) {
+                const detailButton = document.createElement('button');
+                detailButton.className = 'detail-view-btn'; // CSS 스타일링을 위한 클래스
+                detailButton.textContent = `'${recipe.name}' 자세히 보기 🍳`;
+                
+                detailButton.onclick = function() {
+                    // 버튼 클릭 시, get_recipe_detail API 호출
+                    // fetchRecipeDetail(recipe.recipe_id);
+                	window.location.href = '/recipeDetail?recipeId=' + recipe.recipe_id;
+                };
+                bubbleDiv.appendChild(document.createElement('br'));
+                bubbleDiv.appendChild(detailButton);
+            }
             
             messageDiv.appendChild(bubbleDiv);
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
+
+        // '자세히 보기' 버튼을 위한 fetch 함수 추가
+        /*function fetchRecipeDetail(recipeId) {
+            addMessage("자세한 레시피를 알려주세요!", 'user'); // 사용자 요청처럼 보이게 함
+            addMessage("알겠습니다! 잠시만 기다려주세요. AI가 레시피를 맛있게 다듬고 있어요... 🤖", 'bot');
+
+            fetch(`/get_recipe_detail?recipeId=${recipeId}`)
+                .then(response => response.json())
+                .then(detailedRecipe => {
+                    if (detailedRecipe.error) {
+                        addMessage(`오류: ${detailedRecipe.error}`, 'bot');
+                        return;
+                    }
+                    
+                    // Ollama로 생성된 상세 설명 포맷팅
+                    let recipeHtml = `<strong>✨ ${detailedRecipe.name} ✨</strong><br><br>`;
+                    recipeHtml += "<strong>📋 조리법:</strong><br>";
+                    detailedRecipe.instructions.forEach(inst => {
+                        recipeHtml += `- ${inst.description}<br>`;
+                    });
+                    
+                    // addMessage는 XSS 방지를 위해 textContent를 쓰므로, innerHTML을 직접 사용
+                    // 이 경우, 서버에서 오는 데이터가 안전하다고 신뢰할 수 있을 때만 사용해야 함
+                    const messagesContainer = document.getElementById('chatMessages');
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message bot';
+                    const bubbleDiv = document.createElement('div');
+                    bubbleDiv.className = 'message-bubble';
+                    bubbleDiv.innerHTML = recipeHtml; // HTML 렌더링을 위해 innerHTML 사용
+                    messageDiv.appendChild(bubbleDiv);
+                    messagesContainer.appendChild(messageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                })
+                .catch(error => {
+                    addMessage(`레시피 상세 정보를 가져오는 중 오류가 발생했습니다: ${error}`, 'bot');
+                });
+        }*/
         
-        // Enter 키로 메시지 전송
+     	// Enter 키로 메시지 전송
         document.getElementById('chatInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+            // e.key가 'Enter'이고, Shift 키를 누르지 않았을 때
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Enter 키의 기본 동작(줄바꿈)을 막음
+                sendMessage();      // 메시지 전송 함수 호출
             }
         });
     </script>

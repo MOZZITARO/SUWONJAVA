@@ -11,6 +11,7 @@ import test.controller.User;
 import test.dao.UserRepo;
 
     // 유저 레포지토리 서비스 구현
+	// 커스텀
 	@Service	
 	public class CustomService implements UserDetailsService {
 

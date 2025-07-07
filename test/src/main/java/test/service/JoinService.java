@@ -24,6 +24,7 @@ public class JoinService {
  }
  
  public User joinUser(userDTO userDTO) {
+	 
      // DTO를 Entity로 변환
      User user = new User();
      user.setUserId(userDTO.getUser_id());

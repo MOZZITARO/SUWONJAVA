@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 // 커스텀 핸들러 (로그인 정보)
+//커스텀 유저만 담고 나머지 로그인 처리는 시큐리티에서
 @Component
 public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 

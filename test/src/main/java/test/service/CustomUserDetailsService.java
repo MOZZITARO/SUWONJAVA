@@ -41,6 +41,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String user_id) throws UsernameNotFoundException {
         System.out.println("loadUserByUsername 호출됨: " + user_id);
         
+        // select
         userDTO userDto = userDao.loginUserid(user_id);
 
         if (userDto == null) {
