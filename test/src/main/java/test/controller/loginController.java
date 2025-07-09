@@ -52,6 +52,20 @@ public class loginController {
 	private userDAO userDAO;
 
 	
+	@GetMapping("/recipeResult1")
+	public String recipeResult1() {
+	
+			
+		return "recipeResult1";
+	}
+
+	
+	
+	
+	
+	
+	
+	
 	// 로그인 컨트롤러
 	// 로그인 입구
 	@GetMapping("/loginmain")

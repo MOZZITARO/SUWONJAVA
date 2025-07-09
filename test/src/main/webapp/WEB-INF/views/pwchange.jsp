@@ -235,22 +235,40 @@
             <div class="logo-icon">🥗</div>
             FridgeAI
         </div>
+
+
+  <!-- 성공 메시지 표시 (성공했을 때만 표시) -->
+<c:if test="${not empty message}">
+    <div class="success-message" style="background-color: #e8f5e8; color: #2e7d32; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #4caf50;">
+        ✅ ${message}
+    </div>
+</c:if>
+
+<!-- 에러 메시지 표시 (에러가 있을 때만 표시) -->
+<c:if test="${not empty error}">
+    <div class="error-message" style="background-color: #ffebee; color: #c62828; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ef5350;">
+        ❌ ${error}
+    </div>
+</c:if>
+        
+
+        
 <!-- 디버깅용 - 나중에 제거 -->
-    <div style="background: yellow; padding: 10px; margin: 10px;">
+    <!-- <div style="background: yellow; padding: 10px; margin: 10px;">
         <strong>디버깅 정보:</strong><br>
         토큰 값: [${token}]<br>
         토큰 존재 여부: ${not empty token ? '존재' : '없음'}
-    </div>
+    </div> -->
 
         <h1 class="title">비밀번호 재설정</h1>
         <p class="subtitle">새로운 비밀번호를 설정하여 계정을 안전하게 보호하세요</p>
 
-        <div class="success-message" id="successMessage">
+        <!-- <div class="success-message" id="successMessage">
             ✅ 비밀번호가 성공적으로 변경되었습니다!
-        </div>
+        </div> -->
 
         <form id="resetForm" action="changeok" method="post">
-       ${token} 
+       <!-- ${token}  -->
          <input type="hidden" name="token" value="${token}">
            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
             <div class="form-group">
@@ -277,7 +295,7 @@
                 >
             </div>
 
-            <div class="password-requirements">
+            <!-- <div class="password-requirements">
                 <div class="requirement-title">비밀번호 요구사항</div>
                 <ul class="requirement-list">
                     <li class="requirement-item" id="req-length">
@@ -305,7 +323,7 @@
                         비밀번호 일치
                     </li>
                 </ul>
-            </div>
+            </div> -->
 
             <button type="submit" class="submit-btn" id="submitBtn">
                 비밀번호 변경하기
@@ -327,11 +345,11 @@
         
         console.log('Action URL:', this.action);
         console.log('Method:', this.method);
-        
+    });    
         // 잠깐 제출을 막고 확인 (테스트 후 이 줄 제거)
         // e.preventDefault();
         // alert('폼 제출 확인 - 콘솔을 확인하세요');
-    });
+    
       /*   const newPasswordInput = document.getElementById('newPassword');
         const confirmPasswordInput = document.getElementById('confirmPassword');
         const submitBtn = document.getElementById('submitBtn');

@@ -377,12 +377,13 @@ text-decoration-line: none;
                 
                 <textarea id="content" readonly>여러분을 환영합니다.
 
-본 서비스 이용을 위해 다음과 같은 개인정보를 수집합니다:
-- 이름: 서비스 이용자 식별 및 고객 지원
-- 이메일: 로그인 인증 및 중요 공지사항 전달
-- 비밀번호: 계정 보안 및 본인 인증
+            본 서비스 이용을 위해 다음과 같은 개인정보를 수집합니다:
+            - 이름: 서비스 이용자 식별 및 고객 지원
+            - 이메일: 로그인 인증 및 중요 공지사항 전달
+            - 비밀번호: 계정 보안 및 본인 인증
 
-수집된 개인정보는 서비스 제공 목적으로만 사용되며, 관련 법령에 따라 안전하게 보관됩니다.</textarea>
+            수집된 개인정보는 서비스 제공 목적으로만 사용되며, 관련 법령에 따라 안전하게 보관됩니다.</textarea>
+
             </div>
             
             <button type="submit" class="signup-btn">회원가입</button>
@@ -410,6 +411,7 @@ text-decoration-line: none;
     </div>
     
     <script>
+
     // 폼 유효성 검사 및 상호작용
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
@@ -432,6 +434,58 @@ text-decoration-line: none;
         agreeCheckbox.addEventListener('change', updateSignupButton);
         updateSignupButton(); // 초기 상태 설정
     });
+
+      // 커스텀 유효성 검사
+     /*    form.addEventListener('submit', function(e) {
+            e.preventDefault(); // 기본 제출 동작 방지
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const agreed = agreeCheckbox.checked;
+            
+            // 유효성 검사
+            if (!name) {
+                alert('이름을 입력해주세요.');
+                return;
+            }
+            
+            if (name.length < 3) {
+                alert('이름은 3자 이상이어야 합니다.');
+                return;
+            }
+            
+            if (!email) {
+                alert('이메일을 입력해주세요.');
+                return;
+            }
+            
+            // 이메일 형식 검사
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('올바른 이메일 형식을 입력해주세요.');
+                return;
+            }
+            
+            if (!password) {
+                alert('비밀번호를 입력해주세요.');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('비밀번호는 8자 이상이어야 합니다.');
+                return;
+            }
+            
+            if (!agreed) {
+                alert('개인정보 수집 및 이용동의가 필요합니다.');
+                return;
+            }
+            
+            // 모든 검사 통과 시 서버로 전송
+            form.submit();
+        }); */
+        
     </script>
 </body>
 </html>

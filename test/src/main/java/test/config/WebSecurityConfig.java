@@ -60,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	                "/css/**", "/js/**", "/images/**",
 	                "/findpw", "/send-verification", "/modifypw", "/changeok",
 	                "/joinmain", "/joinprocess", "/changepw", "/newpw",
-	                "/recipeResult", "/predictImageRecipe", "/predictImageRecipe1", "/recipeDetail"
+	                "/recipeResult", "/predictImageRecipe", "/predictImageRecipe1", "/recipeDetail", "/recipeResult1"
 	            ).permitAll()           
 	            .anyRequest().authenticated()
 	        .and()

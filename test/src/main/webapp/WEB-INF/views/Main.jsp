@@ -155,6 +155,97 @@
         .result-section { margin-top: 20px; }
         .recipe-preview { cursor: pointer; border: 1px solid #ccc; padding: 10px; margin: 5px; }
       
+      
+      .result-section { 
+    margin-top: 30px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+}
+
+.result-section h3 {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-section h3:first-child::before {
+    content: "🥬";
+    font-size: 1.5rem;
+}
+
+.result-section h3:last-of-type::before {
+    content: "📋";
+    font-size: 1.5rem;
+}
+
+.result-section ul {
+    list-style: none;
+    margin: 0 0 25px 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.result-section ul li {
+    background: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.result-section ul li::before {
+    content: "•";
+    color: #667eea;
+    margin-right: 6px;
+}
+
+.result-section > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.recipe-preview {
+    display: block;
+    padding: 15px 20px;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    padding-left: 50px;
+}
+
+.recipe-preview::before {
+    content: "🍽️";
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+}
+
+.recipe-preview:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
+    text-decoration: none;
+    color: #2c3e50;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
     </style>
     <script>
     
@@ -287,7 +378,7 @@
                     <c:forEach var="recipe" items="${result.recipe}" varStatus="loop">
                         <c:if test="${loop.index < 3}">
                             <a href="/recipeDetail?recipeId=${recipe.recipe_id}" class="recipe-preview">
-                                ${recipe.name}
+                                ${recipe.name} (자세히 보기)
                             </a>
                         </c:if>
                     </c:forEach>
