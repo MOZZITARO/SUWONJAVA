@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import test.service.CustomUserDetail;
 
@@ -131,7 +132,7 @@ public class imageController {
     @GetMapping("/recipeDetail")
     public String recipeDetail(@RequestParam("recipeId") int recipeId, HttpSession session, Model model) {
         try {
-            String url = "http://localhost:8000/get_recipe_detail";
+            String url = "http://localhost:8000/recipes/detail";
             
             // 세션에서 사용자 정보(user_no) 가져오기 (세션에 저장된 키 이름에 맞게 수정 필요)
             String userNo = null;
@@ -149,12 +150,47 @@ public class imageController {
             
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<Map> response = restTemplate.getForEntity(finalUrl, Map.class);
-            model.addAttribute("recipe", response.getBody());
+            System.out.println("response: " + response);
+            
+            Map<String, Object> recipe = response.getBody();
+            
+            // 응답 본문이 비어있는 경우 처리
+            if (recipe == null || recipe.isEmpty()) {
+                logger.warn("### FastAPI가 빈 레시피 데이터를 반환했습니다.");
+                model.addAttribute("error", "해당 레시피 정보를 찾을 수 없습니다.");
+                return "recipeResult";
+            }
+            
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+            	
+            	// 'instructions' 키가 있는지 확인하고 JSON 문자열로 반환
+            	if (recipe.containsKey("instructions")) {
+            		model.addAttribute("instructionsJson", objectMapper.writeValueAsString(recipe.get("instructions")));
+            	} else {
+            		// 키가 없는 경우를 대비해서 안전하게 빈 배열 전달
+            		model.addAttribute("instructionsJson", "[]");
+            	}
+            	
+            } catch (Exception e) {
+            	// JSON 변환 실패 시 에러 처리
+                model.addAttribute("error", "레시피 데이터를 처리하는 중 오류가 발생했습니다.");
+                System.err.println("에러!!");
+                
+                // 안전을 위해 빈 배열로 초기화
+                model.addAttribute("instructionsJson", "[]");
+            }
+            
+            model.addAttribute("recipe", recipe);
         } catch (Exception e) {
         	logger.error("레시피 상세 조회 오류: {}", e.getMessage(), e);
             model.addAttribute("error", "레시피 조회 오류: " + e.getMessage());
+            
         }
+        
         return "recipeResult"; // recipeResult.jsp로 이동
+        
+        
     }
    
 }

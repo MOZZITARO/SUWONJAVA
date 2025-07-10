@@ -390,7 +390,7 @@
             </div> -->
         </div>
 
-        <div class="feature-cards" id="featureCards">
+        <!-- <div class="feature-cards" id="featureCards">
             <div class="feature-card">
                 <div class="feature-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -420,7 +420,7 @@
                 <h3>취향 저장 (회원)</h3>
                 <p>선호하는 음식 스타일, 알레르기 정보 등을 저장해서 더욱 정확한 추천을 받아보세요.</p>
             </div>
-        </div>
+        </div> -->
 
         <div class="chat-container">
             <div class="chat-header">
@@ -433,6 +433,7 @@
                     <div class="message-bubble">
                         안녕하세요! 냉장고 요리사입니다 🍳<br>
                         냉장고에 어떤 재료들이 있는지 알려주시면, 맛있는 레시피를 추천해드릴게요!
+                        개인정보같은 민감한 내용은 입력하지 말아주세요!!
                     </div>
                 </div>
             </div>
