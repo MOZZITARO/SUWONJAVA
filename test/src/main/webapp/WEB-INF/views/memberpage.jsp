@@ -213,12 +213,9 @@ input[type="password"]:focus {
 					value="${_csrf.token}" />
 
 				<div class="password-form-group">
-					<input type="password" name="currentPw" placeholder="현재 비밀번호"
-						autocomplete="off" required> <input type="password"
-						name="newpw" placeholder="새 비밀번호 (8자 이상)"
-						autocomplete="new-password" required> <input
-						type="password" name="conpw" placeholder="새 비밀번호 확인"
-						autocomplete="new-password" required>
+					    <input type="password" name="currentPw" placeholder="현재 비밀번호" autocomplete="off" > 
+						<input type="password"name="newpw" placeholder="새 비밀번호 (8자 이상)" autocomplete="new-password" > 
+						<input type="password" name="conpw" placeholder="새 비밀번호 확인" autocomplete="new-password">
 				</div>
 
 				<div class="button-group">
@@ -232,21 +229,51 @@ input[type="password"]:focus {
 		%>
 
 
-				<% 
+			<%-- 	<% 
 					test.service.CustomUserDetail customUser = null;
 	                if (userObj instanceof test.service.CustomUserDetail) {
 	                    customUser = (test.service.CustomUserDetail) userObj;
 	                    
-	                   out.print("회원번호: " + customUser.getUserno());
+	                   /* out.print("회원번호: " + customUser.getUserno()); */
                         
                     } 
-                %>
+                %> --%>
 
+
+<% 
+	boolean isKakao = session.getAttribute("kakaoUser") != null;
+	boolean isUser = session.getAttribute("userInform") != null;
+%>
 
 		<div class="section">
 			<h3>취향 설정</h3>
 			<div class="card-list">
-				<% if (customUser != null) { %>
+			
+			
+			<% if (isUser || isKakao) { %>
+	<div class="card-list">
+		<!-- 메뉴 1 -->
+		<div class="card" onclick="location.href='/user/recipe-history'">
+			<div class="card-title">대화 이력보기</div>
+			<div class="card-desc">이전 레시피 내역을 확인할 수 있습니다</div>
+		</div>
+
+		<!-- 메뉴 2 -->
+		<div class="card" onclick="window.location.href='/inputUserPreference'">
+			<div class="card-title">호불호 음식/식재료 저장하기</div>
+			<div class="card-desc">선호하거나 불호하는 음식및 식재료를 추가할 수 있습니다</div>
+		</div>
+
+		<!-- 메뉴 3 -->
+		<div class="card" onclick="window.location.href='/inputUserRefrigerator'">
+			<div class="card-title">냉장고 채우기</div>
+			<div class="card-desc">냉장고에 있는 음식을 설정하고 관리할 수 있습니다</div>
+		</div>
+	</div>
+<% } %>
+			
+			
+				<%-- <% if (customUser != null) { %>
 				<div class="card" onclick="location.href='/user/recipe-history?user_no=<%= customUser.getUserno() %>'"
 					style="cursor: pointer;">
 					<div class="card-title">대화 이력보기</div>
@@ -271,7 +298,7 @@ input[type="password"]:focus {
 					<div class="card-desc">냉장고에 있는 음식을 설정하고 관리할 수 있습니다</div>
 				</div>
 				
-				<% } %>
+				<% } %> --%>
 			</div>
 		</div>
 
@@ -290,7 +317,7 @@ input[type="password"]:focus {
 	%>
 	<script>
 		// 비밀번호 변경 폼 유효성 검사
-		document
+		/* document
 				.getElementById('passwordChangeForm')
 				.addEventListener(
 						'submit',
@@ -340,10 +367,10 @@ input[type="password"]:focus {
 							}
 
 							return true;
-						});
+						}); */
 
 		// 성공 메시지가 있으면 3초 후 자동으로 숨기기
-		document.addEventListener('DOMContentLoaded', function() {
+	/* 	document.addEventListener('DOMContentLoaded', function() {
 			const successAlert = document.querySelector('.alert-success');
 			if (successAlert) {
 				setTimeout(function() {
@@ -354,7 +381,8 @@ input[type="password"]:focus {
 					}, 500);
 				}, 3000);
 			}
-		});
+		}); */
+		
 	</script>
 
 </body>

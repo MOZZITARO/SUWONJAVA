@@ -36,7 +36,7 @@ public class JoinController {
     public String join(@ModelAttribute userDTO userDTO, RedirectAttributes redirectAttributes) {
         try {
         	
-              // 1. 입력값 null 체크 및 기본 검증
+            // 1. 입력값 null 체크 및 기본 검증
             if (userDTO.getUser_name() == null || userDTO.getUser_name().trim().isEmpty()) {
                 System.out.println("이름이 입력되지 않았습니다.");
                 redirectAttributes.addFlashAttribute("error", "이름을 입력해주세요.");
@@ -56,9 +56,9 @@ public class JoinController {
             }
 
             // 2. 이름 길이 검증 (3자 이상)
-            if (userDTO.getUser_name().trim().length() < 3) {
+            if (userDTO.getUser_name().trim().length() < 2) {
                 System.out.println("이름이 너무 짧습니다.");
-                redirectAttributes.addFlashAttribute("error", "이름은 3자 이상이어야 합니다.");
+                redirectAttributes.addFlashAttribute("error", "이름은 2자 이상이어야 합니다.");
                 return "redirect:/joinmain";
             }
 
@@ -108,10 +108,8 @@ public class JoinController {
             return "redirect:/joinmain";
         }
         
-       
-    	
+        
+        
         
     }
 }
-	
-

@@ -40,4 +40,9 @@ public class JoinService {
      return userRepo.existsByUserId(userId);
  }
  
+ // 중복 체크 메서드 추가
+ public boolean isUserNameExists(String userId) {
+     return userRepo.existsByUserName(userId);
+ }
+ 
 }

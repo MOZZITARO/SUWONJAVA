@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -330,6 +331,20 @@ text-decoration-line: none;
     color: #27ae60;
 }
 
+.success-message {
+            background: linear-gradient(135deg, #d5f4e6, #e8f8f5);
+            border: 1px solid #27ae60;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #1e7e34;
+            font-size: 14px;
+            display: none;
+        }
+
+
+
+
 /* 반응형 */
 @media (max-width: 480px) {
     .signup-container {
@@ -341,6 +356,7 @@ text-decoration-line: none;
         font-size: 1.3rem;
     }
 }
+
 </style>
 <body>
 
@@ -352,6 +368,23 @@ text-decoration-line: none;
         
         <h1 class="title">회원가입</h1>
         
+          <!-- 성공 메시지 표시 (성공했을 때만 표시) -->
+<c:if test="${not empty message}">
+    <div class="success-message" style="background-color: #e8f5e8; color: #2e7d32; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #4caf50;">
+        ✅ ${message}
+    </div>
+</c:if>
+
+<!-- 에러 메시지 표시 (에러가 있을 때만 표시) -->
+<c:if test="${not empty error}">
+    <div class="error-message" style="background-color: #ffebee; color: #c62828; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ef5350;">
+        ❌ ${error}
+    </div>
+</c:if>
+
+ <div class="success-message" id="successMessage">
+            ✅ 비밀번호가 성공적으로 변경되었습니다!
+        </div>
         
         <form id="signupForm" action="joinprocess" method="post">
             <div class="form-group">

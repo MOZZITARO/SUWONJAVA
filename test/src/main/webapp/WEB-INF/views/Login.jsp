@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -261,6 +262,8 @@ body {
     color: white;
 }
 
+
+
 /* 반응형 */
 @media (max-width: 480px) {
     body {
@@ -312,6 +315,9 @@ body {
             <div class="logo-icon"></div>
             <h1 class="brand-name">FridgeAI</h1>         
         </div>
+        
+        
+       
         
         <h2 class="title">로그인</h2>
         

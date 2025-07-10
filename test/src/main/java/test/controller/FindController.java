@@ -1,5 +1,6 @@
 package test.controller;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -55,44 +56,34 @@ public class FindController {
 	
 
     
-    // 메일 보내기 로직
-    @PostMapping("/send-verification")
-    public String sendVerification(@RequestParam String email, String token, Model model,  RedirectAttributes redirectAttributes) {
-    	System.out.println("인증확인용 출력");
-    	try {
-    	
-//    		     String tokens = UUID.randomUUID().toString();
-//    		     
-//    		     boolean result = MailService.mailsender(email, tokens);
-//    		     if (result) {
-//    		    	    
-//    		        } else {
-//    		            model.addAttribute("error", "메일 전송에 실패했습니다.");
-//    		        }
-    		     
-    		         User user = userRepo.findByUserId(email)
-  	        	    .orElseThrow(() -> {
-  	        	        System.out.println("❌ 사용자를 찾을 수 없음");
-  	        	        redirectAttributes.addFlashAttribute("error", "사용자 정보를 찾을 수 없습니다.");
-  	        	        return new RuntimeException("사용자를 찾을 수 없습니다.");
-  	        	    });
-    		        
-    		
-    		
-    		
-    		
-    		
-    				passwordResetService.requestPasswordReset(email);
-		            model.addAttribute("message", "인증 메일이 전송되었습니다.");
-    		
-    	 } catch (Exception e) {
-    	        e.printStackTrace(); // 구체적인 오류 확인
-    	        model.addAttribute("error", "메일 전송 중 오류 발생: " + e.getMessage());
-         }
-    	
-    	
-    	return "Login";
-    }
+	// 메일 보내기 로직
+	@PostMapping("/send-verification")
+	public String sendVerification(@RequestParam String email, String token, Model model, RedirectAttributes redirectAttributes) {
+	    System.out.println("인증확인용 출력");
+	    try {
+	        // 사용자 존재 여부 확인
+	        Optional<User> userOptional = userRepo.findByUserId(email);
+	        
+	        if (userOptional.isEmpty()) {
+	            System.out.println("❌ 사용자를 찾을 수 없음");
+	            redirectAttributes.addFlashAttribute("error", "등록되지 않은 이메일입니다.");
+	            return "redirect:/findpw"; // findpw 페이지로 리다이렉트
+	        }
+	        
+	        User user = userOptional.get();
+	        
+	        // 비밀번호 재설정 요청 처리
+	        passwordResetService.requestPasswordReset(email);
+	        model.addAttribute("message", "인증 메일이 전송되었습니다.");
+	        
+	        return "Login"; // 성공 시 Login 페이지로
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace(); // 구체적인 오류 확인
+	        model.addAttribute("error", "메일 전송 중 오류 발생: " + e.getMessage());
+	        return "Login"; // 오류 발생 시에도 Login 페이지로
+	    }
+	}
     
     
     

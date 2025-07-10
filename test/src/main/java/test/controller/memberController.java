@@ -62,6 +62,7 @@ public class memberController {
 	        	        redirectAttributes.addFlashAttribute("error", "사용자 정보를 찾을 수 없습니다.");
 	        	        return new RuntimeException("사용자를 찾을 수 없습니다.");
 	        	    });
+	        
 	        if (user == null) {
 	            System.out.println("❌ 사용자를 찾을 수 없음");
 	            redirectAttributes.addFlashAttribute("error", "사용자 정보를 찾을 수 없습니다.");

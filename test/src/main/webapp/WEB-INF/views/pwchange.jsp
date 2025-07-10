@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -263,9 +263,9 @@
         <h1 class="title">비밀번호 재설정</h1>
         <p class="subtitle">새로운 비밀번호를 설정하여 계정을 안전하게 보호하세요</p>
 
-        <!-- <div class="success-message" id="successMessage">
+         <div class="success-message" id="successMessage">
             ✅ 비밀번호가 성공적으로 변경되었습니다!
-        </div> -->
+        </div>
 
         <form id="resetForm" action="changeok" method="post">
        <!-- ${token}  -->

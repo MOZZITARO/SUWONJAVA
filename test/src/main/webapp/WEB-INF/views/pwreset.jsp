@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -96,6 +97,24 @@ body {
     font-size: 0.9rem;
     display: none;
     line-height: 1.5;
+}
+
+/* 에러 메시지 스타일 추가 */
+.error-message {
+    background: #ffebee;
+    border: 1.5px solid #ef5350;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 32px;
+    color: #c62828;
+    font-weight: 500;
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 /* 폼 전체 설정 */
@@ -256,11 +275,12 @@ body {
     }
 }
 
-.success-message {
+.success-message, .error-message {
     animation: slideDown 0.3s ease-out;
 }
 </style>
 <body>
+
     <div class="reset-container">
         <div class="brand-logo">
             <div class="logo-icon"></div>
@@ -270,6 +290,20 @@ body {
 
         <h2 class="title">비밀번호 재설정</h2>
         
+        <!-- 성공 메시지 표시 (성공했을 때만 표시) -->
+        <c:if test="${not empty message}">
+            <div class="success-message" style="display: block;">
+                ✅ ${message}
+            </div>
+        </c:if>
+
+        <!-- 에러 메시지 표시 (에러가 있을 때만 표시) -->
+        <c:if test="${not empty error}">
+            <div class="error-message">
+                ❌ ${error}
+            </div>
+        </c:if>
+        
         <div class="success-message" id="successMessage">
             📧 비밀번호 재설정 메일이 발송되었습니다!<br>
             이메일을 확인해 주세요.
@@ -278,7 +312,7 @@ body {
          <form id="resetForm" action="send-verification" method="post">
             <div class="form-group">
                 <label class="form-label" for="email">이메일 주소</label>
-                <input type="email" id="email" name="email" class="form-input" placeholder="example@naver.com" required>
+                <input type="email" id="email" name="email" class="form-input" placeholder="example@naver.com" autocomplete="off" required>
             </div>
             
             <p class="info-text">
