@@ -189,6 +189,9 @@ input[type="password"]:focus {
 		<%
 		Object kakaouser = session.getAttribute("kakaoUser");
 		Object userObj = session.getAttribute("userInform");
+		test.service.CustomUserDetail customUser = null;
+		customUser = (test.service.CustomUserDetail) userObj;
+		/*out.print("회원번호: " + customUser.getUserno());*/
 		if (kakaouser == null) {
 		%>
 
@@ -253,19 +256,19 @@ input[type="password"]:focus {
 			<% if (isUser || isKakao) { %>
 	<div class="card-list">
 		<!-- 메뉴 1 -->
-		<div class="card" onclick="location.href='/user/recipe-history'">
+		<div class="card" onclick="location.href='/user/recipe-history?user_no=<%= customUser.getUserno() %>'">
 			<div class="card-title">대화 이력보기</div>
 			<div class="card-desc">이전 레시피 내역을 확인할 수 있습니다</div>
 		</div>
 
 		<!-- 메뉴 2 -->
-		<div class="card" onclick="window.location.href='/inputUserPreference'">
+		<div class="card" onclick="window.location.href='/inputUserPreference?user_no=<%= customUser.getUserno() %>'">
 			<div class="card-title">호불호 음식/식재료 저장하기</div>
 			<div class="card-desc">선호하거나 불호하는 음식및 식재료를 추가할 수 있습니다</div>
 		</div>
 
 		<!-- 메뉴 3 -->
-		<div class="card" onclick="window.location.href='/inputUserRefrigerator'">
+		<div class="card" onclick="window.location.href='/inputUserRefrigerator?user_no=<%= customUser.getUserno() %>'">
 			<div class="card-title">냉장고 채우기</div>
 			<div class="card-desc">냉장고에 있는 음식을 설정하고 관리할 수 있습니다</div>
 		</div>
