@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>냉장고 채우기</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet" />
+   <style>
+    /* 기본 스타일 */
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;  /* ← 여기에서 아래로 밀어냄 */
+      min-height: 100vh;
+
+    }
+    .container {
+      max-width: 900px;
+      margin: 50px auto 0 auto;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: relative;
+      min-height: 600px;
+    }
+    .header {
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #2c3e50;
+    }
+
+    /* 업로드 링크 */
+    .upload-link {
+      display: inline-block;
+      background-color: #f39c12;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      margin-bottom: 25px;
+      transition: background-color 0.3s ease;
+    }
+    .upload-link:hover {
+      background-color: #e67e22;
+    }
+
+    /* 폼 섹션 */
+    .form-section {
+      margin-bottom: 30px;
+    }
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .form-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    input[type="text"], input[type="date"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 5px rgba(52,152,219,0.5);
+    }
+    .action-button-section {
+      margin-top: 20px;
+      text-align: right;
+      
+     
+    }
+    .btn-register, .btn-view, .btn-reset {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.2s ease;
+    }
+    .btn-register:hover, .btn-view:hover, .btn-reset:hover {
+      background-color: #2980b9;
+    }
+
+    /* 테이블 스타일 */
+    .table-container {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table-header, .table-row {
+      display: grid;
+      grid-template-columns: 40px 1.5fr 1.5fr 1.2fr 1.2fr;
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+      align-items: center;
+    }
+    .table-header {
+      background-color: #3498db;
+      color: #fff;
+      font-weight: bold;
+    }
+    .table-row:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .table-row button {
+      background-color: #e74c3c;
+      border: none;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-right: 6px;
+      transition: opacity 0.2s ease;
+    }
+    .table-row button.edit {
+      background-color: #2ecc71;
+    }
+    .table-row button:hover {
+      opacity: 0.85;
+    }
+
+    /* 하단 버튼 */
+    .bottom-section {
+      margin-top: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+    }
+    .bottom-btn {
+      background-color: #27ae60;
+      color: white;
+      padding: 18px 32px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    .bottom-btn:hover {
+      background-color: #1e8449;
+    }
+
+    /* 결과 출력 영역 */
+    #recipe-check-result p {
+      background: #dff0d8;
+      padding: 10px;
+      border-radius: 6px;
+      color: #3c763d;
+      font-weight: bold;
+      margin-top: 12px;
+      word-break: keep-all;
+    }
+
+    .btn-group{
+      display: flex;
+      gap: 6px;
+    }
+
+
+    .btn-group button {
+      padding: 6px 8px;  /* 위아래 패딩 작게, 좌우 패딩 넓게 */
+      height: 32px;       /* 버튼 높이 지정 */
+      min-width: 110px;   /* 최소 너비 지정 (필요에 따라 조정) */
+      font-size: 0.9rem;  /* 글자 크기 조절 */
+      border-radius: 6px; /* 모서리 둥글게 */
+      cursor: pointer;
+}
+
+    .btn-group button.edit {
+    min-width: 60px;     /* 너비 줄임 */
+    padding: 6px 6px;    /* 텍스트 좌우 여백도 줄임 */
+    font-size: 0.85rem;  /* 글자도 살짝 작게 */
+}
+
+
+
+
+    /* 모달 백그라운드 */
+    #editModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+    #editModal.active {
+      display: flex;
+    }
+
+    /* 모달 박스 */
+    #editModal .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 450px;
+      padding: 30px 25px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    /* 모달 헤더 */
+    #editModal .modal-header {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: #2c3e50;
+    }
+
+    /* 모달 폼 그룹 */
+    #editModal label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+    #editModal input[type="text"],
+    #editModal input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    #editModal input[type="text"]:focus,
+    #editModal input[type="date"]:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 5px rgba(52,152,219,0.5);
+    }
+
+    /* 모달 버튼 섹션 */
+    #editModal .modal-actions {
+      text-align: right;
+    }
+    #editModal button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.2s ease;
+    }
+    #editModal button:hover {
+      background-color: #2980b9;
+    }
+    #editModal button.close-btn {
+      background-color: #e74c3c;
+    }
+    #editModal button.close-btn:hover {
+      background-color: #c0392b;
+    }
+
+        /* 페이징 버튼 컨테이너 */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    /* 페이징 버튼 기본 스타일 */
+    .pagination button {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      user-select: none;
+    }
+
+    /* 활성 페이지 버튼 */
+    .pagination button[disabled],
+    .pagination button.active {
+      background-color: #2c3e50;
+      cursor: default;
+      font-weight: 700;
+    }
+
+    /* 호버 효과 */
+    .pagination button:not([disabled]):hover {
+      background-color: #2980b9;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">냉장고 채우기</div>
+    
+    <a href="/upload/{{ userNo }}" class="upload-link" tabindex="0">+ 이미지로 식재료 등록하기</a>
+
+    <div class="form-section">
+      <form id="searchForm" onsubmit="return searchFoodList(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ingredient">구매 식재료</label>
+            <input type="text" id="ingredient" name="ingredient" placeholder="예: 바나나" />
+          </div>
+          <div class="form-group">
+            <label for="pur_date">구매일자</label>
+            <input type="date" id="pur_date" name="purDate">
+          </div>
+        </div>
+        <div class="action-button-section">
+          <button type="button" class="btn-register" onclick="registerFood()">등록</button>
+          <button type="submit" class="btn-view">조회</button>
+          <button type="button" class="btn-reset" onclick="clearSearch()">초기화</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-container" aria-live="polite" aria-relevant="all" role="region">
+      <div class="table-header" role="rowgroup">
+        <div><input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()" aria-label="모든 식재료 선택" /></div>
+        <div>식품명</div>
+        <div>구매일자</div>
+        <div></div>
+        <div>냉장고 관리</div>
+      </div>
+      <!-- 서버 사이드 템플릿 언어 반복문 -->
+      
+      <input type="hidden" id="userNo"  value= {{ userNo }}></input>
+      {% for item in result %}
+      <div class="table-row" role="row">
+        <div><input type="checkbox" class="item-checkbox" aria-label="{{ item.ingredient }} 선택" /></div>
+        <div>{{ item.ingredient }}</div>
+        <div class="purchase-date">{{ item.purDate }}</div>
+        <div class="daysPassed"></div>
+        <div>
+        <div class="btn-group">  
+          <button type="button" onclick="deleteIngredient({{ item.indexNo }})" aria-label="{{ item.ingredient }} 삭제">음식물 버리기</button>
+          <button type="button" class="edit" onclick="openEditModal({{ item.indexNo }}, '{{ item.ingredient }}', '{{ item.purDate }}')" aria-label="{{ item.ingredient }} 수정">수정</button>
+        </div>  
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="pagination" id="pagination" style="margin-top: 20px; text-align: center;">
+    </div>
+
+    <div class="bottom-section">
+      <button class="bottom-btn" type="button" onclick="recommendMeal()">🥗 냉장고에 있는 재료로 레시피 추천받기</button>
+      <button class="bottom-btn" type="button" onclick="checkAvailableRecipes()">🔍 재료 사용 가능 여부 확인하기</button>
+    </div>
+
+    <div id="recipe-check-result" aria-live="polite" style="min-height: 2.4em;"></div>
+  </div>
+
+  <!-- 수정 모달 -->
+  <div id="editModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+    <div class="modal-content">
+      <h2 id="modalTitle" class="modal-header">식재료 수정</h2>
+      <form id="editForm">
+        <input type="hidden" id="editIndexNo" name="editIndexNo" />
+        <label for="editIngredient">식재료명</label>
+        <input type="text" id="editIngredient" name="editIngredient" placeholder="예: 바나나" autocomplete="off" required />
+        <label for="editPurDate">구매일자</label>
+        <input type="date" id="editPurDate" name="editPurDate" required />
+        <div class="modal-actions">
+          <button type="button" class="close-btn" onclick="closeEditModal()">취소</button>
+          <button type="submit">수정 완료</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+
+    
+
+  // 등록 함수
+  function registerFood() {
+   
+    const ingredient = document.getElementById('ingredient').value.trim();
+    const purDate = document.getElementById('pur_date').value;
+    const userNo = document.getElementById('userNo').value;
+
+    console.log("userNo: ", userNo);
+
+    if (!ingredient || !purDate) {
+      alert('식재료와 구매일자를 모두 입력해주세요.');
+      return;
+    }
+    fetch('/api/refrigerator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userNo, ingredient, purDate }),
+    })
+      .then((r) => {
+        if (r.ok) location.reload();
+        else alert('등록 실패');
+      })
+      .catch(() => alert('오류 발생'));
+  }
+
+  // 검색 함수
+  //function searchFoodList(event) {
+  //  event.preventDefault();
+    
+  //  const ingredient = document.getElementById('ingredient').value.trim();
+  //  const purDate = document.getElementById('pur_date').value;
+  //  const userNo = document.getElementById('userNo').value;
+
+  //  let query = `?userNo=${userNo}`;
+  //  if (ingredient) query += `&ingredient=${ingredient}`;
+  //  if (purDate) query += `&purDate=${purDate}`;
+  //  console.log("query: ", query);
+    
+  //  window.location.href = `/inputUserRefrigerator/${userNo}${query}`;
+    
+  //}
+
+  // 검색 함수
+  function searchFoodList(event) {
+  event.preventDefault();
+
+  const ingredient = document.getElementById('ingredient').value.trim();
+  const purDate = document.getElementById('pur_date').value;
+  const userNo = document.getElementById('userNo').value;
+  const page = 1;
+  const size = 12;
+
+  let query = `userNo=${userNo}&page=${page}&size=${size}`;
+  if (ingredient) query += `&ingredient=${encodeURIComponent(ingredient)}`;
+  if (purDate) query += `&purDate=${purDate}`;
+
+  fetch(`http://localhost:8080/api/refrigerator?${query}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  })
+    .then(res => {
+      console.log("응답 코드: ", res.status);
+      if (!res.ok) throw new Error("Spring 응답 오류");
+      return res.json();
+    })
+    .then(data => {
+      console.log("받은 JSON:", data); // 🧪 디버깅 포인트
+      if (!data.content || data.content.length === 0) {
+        alert("검색 결과가 없습니다.");
+        return;
+      }
+
+      // ✅ 여기서 기존 테이블 지우고 새로 그려야 함
+      renderTable(data.content);
+      renderPagination(page, Math.ceil(data.totalCount / size));
+      daysPassed();
+    })
+    .catch(err => {
+      console.error("검색 실패:", err);
+      alert("검색 중 오류 발생");
+    });
+}
+
+function renderTable(data) {
+  const tableContainer = document.querySelector(".table-container");
+
+  // 테이블 헤더 제외하고 기존 row 제거
+  const rows = tableContainer.querySelectorAll(".table-row");
+  rows.forEach(row => row.remove());
+
+  // 행 추가
+  data.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "table-row";
+    row.setAttribute("role", "row");
+
+    row.innerHTML = `
+      <div><input type="checkbox" class="item-checkbox" aria-label="${item.ingredient} 선택" /></div>
+      <div>${item.ingredient}</div>
+      <div class="purchase-date">${item.purDate}</div>
+      <div class="daysPassed"></div>
+        <div class="btn-group">
+          <button type="button" onclick="deleteIngredient(${item.indexNo})" aria-label="${item.ingredient} 삭제">음식물 버리기</button>
+          <button type="button" class="edit" onclick="openEditModal(${item.indexNo}, '${item.ingredient}', '${item.purDate}')" aria-label="${item.ingredient} 수정">수정</button>
+        </div>
+      </div>
+    `;
+
+    tableContainer.appendChild(row);
+  });
+}
+
+
+  // 초기화 함수
+  function clearSearch() {
+    const userNo = document.getElementById('userNo').value;
+    //document.getElementById('ingredient').value = '';
+    //document.getElementById('pur_date').valueAsDate = new Date();
+    //window.location.href = `/inputUserRefrigerator/${userNo}`;
+    location.reload();
+  }
+
+  // 전체 선택 토글
+  function toggleAllCheckboxes() {
+    const checked = document.getElementById('selectAll').checked;
+    document.querySelectorAll('.item-checkbox').forEach((cb) => {
+      cb.checked = checked;
+    });
+  }
+
+  // 삭제 함수
+  function deleteIngredient(indexNo) {
+    if (!confirm('삭제하시겠습니까?')) return;
+    fetch(`/api/refrigerator/delete_ingredient/${indexNo}`, { method: 'DELETE' })
+      .then((r) => {
+        if (r.ok) location.reload();
+        else alert('삭제 실패');
+      })
+      .catch(() => alert('오류 발생'));
+  }
+
+
+
+
+      //.then((res) => res.json())
+      //.then((data) => {
+      //  alert(data.message || data.error || '삭제 실패');
+      //  if (data.message) location.reload();
+      //})
+      //.catch(() => alert('삭제 중 오류가 발생했습니다.'));
+  //}
+
+  // 수정 모달 열기
+  function openEditModal(indexNo, ingredient, purDate) {
+    const modal = document.getElementById('editModal');
+    document.getElementById('editIndexNo').value = indexNo;
+    document.getElementById('editIngredient').value = ingredient;
+    document.getElementById('editPurDate').value = purDate;
+    modal.classList.add('active');
+    modal.focus();
+    document.addEventListener('keydown', onEscPress); // ESC 키 이벤트
+  }
+
+  // ESC 키로 모달 닫기 핸들러
+  function onEscPress(e) {
+    if (e.key === 'Escape') {
+      closeEditModal();
+    }
+  }
+
+  // 수정 모달 닫기
+  function closeEditModal() {
+    const modal = document.getElementById('editModal');
+    modal.classList.remove('active');
+    document.removeEventListener('keydown', onEscPress);
+  }
+
+  // 수정 제출 처리
+  document.addEventListener('DOMContentLoaded', () => {
+    const editForm = document.getElementById('editForm');
+    editForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const indexNo = document.getElementById('editIndexNo').value;
+      const ingredient = document.getElementById('editIngredient').value.trim();
+      const purDate = document.getElementById('editPurDate').value;
+
+      if (!ingredient || !purDate) {
+        alert('모든 값을 입력하세요.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/refrigerator/${indexNo}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ingredient, purDate }),
+        });
+
+        if (response.ok) {
+          alert('수정이 완료되었습니다.');
+          closeEditModal();
+          location.reload();
+        } else {
+          alert('수정 실패: 서버 응답 오류');
+        }
+      } catch (error) {
+        console.error('수정 중 오류:', error);
+        alert('오류가 발생했습니다.');
+      }
+    });
+  });
+
+  // 식단 추천 aaaaaaaa
+  function recommendMeal() {
+    // 1. 체크된 모든 재료의 이름을 배열로 수집
+    const selectedIngredients = [...document.querySelectorAll('.item-checkbox:checked')].map(
+      (checkbox) => checkbox.closest('.table-row').children[1].textContent.trim()
+    );
+
+    if (selectedIngredients.length === 0) {
+        alert('추천받을 식재료를 하나 이상 선택해주세요.');
+        return;
+    }
+
+    // 로딩 중임을 사용자에게 알림
+    alert(`선택된 식재료: ${selectedIngredients.join(', ')}\n\nAI가 최적의 레시피를 찾고 있습니다. 잠시만 기다려주세요...`);
+
+    // 2. 선택된 재료 배열을 쉼표로 구분된 문자열로 변환
+    const ingredientsString = selectedIngredients.join(',');
+
+    const userNo = document.getElementById('userNo').value;
+    console.log("userNo: ", userNo)
+    if(!userNo) {
+      alert('사용자 정보가 없습니다. 다시 로그인해주세요.');
+      return;
+    }
+
+    // FAST API로 보낼 데이터
+    const bodyPayload = new URLSearchParams();
+    bodyPayload.append('selected_ingredients', ingredientsString);
+    bodyPayload.append('user_no', userNo);
+
+    // 3. FastAPI 서버로 직접 데이터 전송
+    fetch('http://localhost:8000/recipes/refrigerator/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: bodyPayload
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`레시피 추천 서버 오류: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            alert(`오류: ${data.error}`);
+            return;
+        }
+
+        if (Array.isArray(data.recipes) && data.recipes.length > 0) {
+            const recommendedRecipe = data.recipes[0];
+            const recipeId = recommendedRecipe.recipe_id;
+
+            alert(`'${recommendedRecipe.name}' 레시피를 추천합니다! 상세 페이지로 이동합니다.`);
+
+            // Spring Boot의 레시피 상세 페이지로 이동
+            window.location.href = `/recipeDetail?recipeId=${recipeId}`;
+        } else {
+            alert('아쉽지만 선택하신 재료로 추천할 만한 레시피를 찾지 못했어요. 😥');
+        }
+    })
+    .catch(error => {
+        console.error('식단 추천 기능 오류:', error);
+        alert('레시피를 추천받는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    });
+}
+
+
+  
+  /* function recommendMeal11() {
+    const selected = [...document.querySelectorAll('.item-checkbox:checked')].map(
+      (cb) => cb.closest('.table-row').children[1].textContent.trim()
+    );
+    if (selected.length == 0) {
+      alert('추천받을 식재료를 하나 이상 선택해주세요.');
+      return;
+    }
+    alert(`선택된 식재료: ${selected.join(', ')}\n\n식단 추천 실행!`);
+
+    const ingredientsString = selected.join(', ');
+
+    fetch('http://localhost:8000/recipe_from_refrigerator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'selected_ingredients=' + encodeURIComponent(ingredientsString)
+  }
+  .then((response) => {
+      if (!response.ok) {
+        throw new Error(`레시피 추천 서버 오류: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.error) {
+        alert(`오류: ${data.error}`);
+        return;
+      }
+      if (Array.isArray(data.recipe) && data.recipe.length > 0) {
+        const recommendRecipe = data.recipe[0];
+        const recipeId = recommendRecipe.recipe_id;
+        
+        alert(` '${recommendRecipe.name}' 레시피를 추천합니다! 상세 페이지로 이동합니다.`);
+        window.location.href = `/recipeDeatail?recipeId=${recipeId}`;
+      } else {
+        alert('아쉽지만 선택하신 재료로 추천할 만한 레시피를 찾지 못했어요. 😥');
+      }
+    })
+    .catch((error) => {
+      console.error('레시피 추천 기능 오류:', error);
+      alert('레시피 추천 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }); 
+  } */
+
+  // 사용 가능 여부 확인
+  function checkAvailableRecipes() {
+    const selected = [...document.querySelectorAll('.item-checkbox:checked')].map((cb) => {
+      const row = cb.closest('.table-row');
+      return {
+        ingredient: row.children[1].textContent.trim(),
+        purDate: row.querySelector('.purchase-date').textContent.trim()
+      };
+    });
+
+    if (!selected.length) return alert('식재료를 선택해주세요.');
+
+    fetch('http://localhost:5000/can_eat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ingredients: selected })
+    })
+      .then(res => res.json())
+      .then(data => {
+        const div = document.getElementById('recipe-check-result');
+        div.innerHTML = '';
+        if (data.error) {
+          div.innerHTML = `<p style="color:red;">오류: ${data.error}</p>`;
+        } else {
+          data.results.forEach(msg => {
+            const p = document.createElement('p');
+            p.textContent = msg;
+            div.appendChild(p);
+          });
+        }
+      })
+      .catch(() => alert('요청 실패'));
+  }
+
+  // 경과일 표시
+  function daysPassed() {
+    const today = new Date();
+    document.querySelectorAll('.table-row').forEach(row => {
+      const purDateElem = row.querySelector('.purchase-date');
+      const daysLeftElem = row.querySelector('.daysPassed');
+      if (!purDateElem || !daysLeftElem) return;
+
+      const purDateStr = purDateElem.textContent.trim();
+      if (!purDateStr) {
+        daysLeftElem.textContent = "-";
+        return;
+      }
+
+      const purDate = new Date(purDateStr);
+      if (isNaN(purDate)) {
+        daysLeftElem.textContent = "-";
+        return;
+      }
+
+      const diffTime = today.getTime() - purDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        daysLeftElem.textContent = `D-${Math.abs(diffDays)}일`;
+        daysLeftElem.style.color = '#27ae60';
+      } else if (diffDays === 0) {
+        daysLeftElem.textContent = '';
+      } else {
+        daysLeftElem.textContent = `D+${diffDays}일 지남`;
+        daysLeftElem.style.color = '#e74c3c';
+      }
+    });
+  }
+
+  // 페이징 렌더링 함수
+  function renderPagination(currentPage, totalPages) {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    if (totalPages <= 1) return;
+
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '이전';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => goToPage(currentPage - 1);
+    pagination.appendChild(prevBtn);
+
+    for (let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.style.fontWeight = currentPage === i ? 'bold' : 'normal';
+      btn.onclick = () => goToPage(i);
+      pagination.appendChild(btn);
+    }
+
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = '다음';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => goToPage(currentPage + 1);
+    pagination.appendChild(nextBtn);
+  }
+
+  function goToPage(page) {
+    const ingredient = document.getElementById('ingredient').value.trim();
+    const purDate = document.getElementById('pur_date').value;
+    const userNo = document.getElementById('userNo').value;
+    const size = 12;
+
+    let query =`userNo=${userNo}&page=${page}&size=${size}`;
+    if (ingredient) query += `&ingredient=${encodeURIComponent(ingredient)}`;
+    if (purDate) query += `&purDate=${purDate}`;
+
+    fetch(`http://localhost:8080/api/refrigerator?${query}`, {
+    method: 'GET',
+    headers: { 'Accept': 'application/json' }
+  })
+     .then(res => {
+      if (!res.ok) throw new Error("페이징 데이터 요청 실패");
+      return res.json();
+    })
+    .then(data => {
+      renderTable(data.content);
+      renderPagination(page, Math.ceil(data.totalCount / size));
+      daysPassed();
+    })
+    .catch(err => {
+      console.error("페이징 실패:", err);
+      alert("페이지 이동 중 오류 발생");
+    });
+}
+
+  
+
+  // 페이지 로드시 실행
+  document.addEventListener('DOMContentLoaded', () => {
+    daysPassed();
+    const currentPage = {{ currentPage|default(1) }};
+    const totalPages = {{ totalPages|default(1) }};
+    renderPagination(currentPage, totalPages);
+  });
+</script>
+
+</body>
+</html>

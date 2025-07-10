@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: test
+
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+  datasource:
+    url: jdbc:mariadb://192.168.0.33:3306/test?useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Seoul
+    username: team1
+    password: team1
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  servlet:
+    multipart:
+      enabled: true
+      location: c:/Temp/upload
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 9b4c237c90a9730aa699691a34248694
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            client-authentication-method: post
+            authorization-grant-type: authorization_code
+            scope:
+              - profile_nickname
+              - profile_image
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+  mail:
+    host: smtp.naver.com
+    port: 587
+    username: alsqud45w@naver.com
+    password: RLYLYX4S4KPX
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+    default-encoding: UTF-8
+
+mybatis:
+  mapper-locations: mapper/**/*.xml
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.mail: DEBUG
+    org.springframework.security: WARN
+    org.springframework.web: ERROR
+    org.hibernate: ERROR
+
+jpa:
+  hibernate:
+    ddl-auto: validate
+  show-sql: true
+  properties:
+    hibernate:
+      format_sql: true
+      dialect: org.hibernate.dialect.MariaDBDialect

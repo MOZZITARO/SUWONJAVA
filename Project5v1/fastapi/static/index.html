@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>이미지 업로드 및 레시피 조회</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 40px 32px 32px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 350px;
+        }
+        .drop-box {
+            border: 2px dashed #bbb;
+            border-radius: 12px;
+            width: 320px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+            color: #888;
+            font-size: 1.1em;
+            margin-bottom: 18px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+        .drop-box.dragover {
+            border-color: #0078d7;
+            background: #e6f0fa;
+        }
+        .drop-box input[type="file"] {
+            display: none;
+        }
+        .drop-box .desc {
+            margin-top: 12px;
+            font-size: 1em;
+            color: #888;
+        }
+        .drop-box .camera {
+            font-size: 3em;
+            color: #bbb;
+        }
+        #preview {
+            max-width: 90%;
+            max-height: 120px;
+            border-radius: 8px;
+            display: none;
+        }
+        .submit-btn {
+            width: 320px;
+            margin-top: 12px;
+            padding: 10px 0;
+            background: #0078d7;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .submit-btn:hover {
+            background: #005fa3;
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <h1>이미지 업로드 및 레시피 조회</h1>
+    <div class="drop-box" id="dropBox">
+      <div class="camera">📷</div>
+      <div class="desc">이미지를 드래그 앤 드롭하세요!<br>또는 클릭하여 파일 선택</div>
+      <input name="file" type="file" id="fileInput" accept="image/*" required>
+      <img id="preview" src="#" alt="미리보기">
+    </div>
+    <button type="button" class="submit-btn" id="analyzeBtn">구글 조회</button>
+    <button type="button" class="submit-btn" id="modelBtn" style="background:#27ae60;margin-top:8px;">학습 모델</button>
+  </div>
+  <script>
+    const dropBox = document.getElementById('dropBox');
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    let selectedFile = null;
+    let fileName = '';
+
+    // Drag & Drop
+    dropBox.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropBox.classList.add('dragover');
+    });
+    dropBox.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      dropBox.classList.remove('dragover');
+    });
+    dropBox.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropBox.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        fileInput.files = e.dataTransfer.files;
+        showPreview(e.dataTransfer.files[0]);
+        selectedFile = e.dataTransfer.files[0];
+        fileName = selectedFile.name;
+      }
+    });
+    // 클릭시 파일 선택
+    dropBox.addEventListener('click', function(e) {
+      // drop-box 클릭 시에만 fileInput 클릭 (버튼 클릭시 무시)
+      if (e.target === dropBox || e.target.classList.contains('camera') || e.target.classList.contains('desc')) {
+        fileInput.click();
+      }
+    });
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files && fileInput.files[0]) {
+        showPreview(fileInput.files[0]);
+        selectedFile = fileInput.files[0];
+        fileName = selectedFile.name;
+      }
+    });
+    function showPreview(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+    // 구글 조회(기존)
+    document.getElementById('analyzeBtn').onclick = async function() {
+      if (!selectedFile) {
+        alert('이미지를 선택하세요!');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      // 이미지 미리보기 데이터 저장
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        sessionStorage.setItem('resultImage', e.target.result);
+        sessionStorage.setItem('resultFilePath', fileName);
+        // API 호출
+        const response = await fetch('/gemini-recipe', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        if (data.success) {
+          sessionStorage.setItem('resultAnalysis', data.analysis);
+        } else {
+          sessionStorage.setItem('resultAnalysis', '오류: ' + data.error);
+        }
+        // 결과 페이지로 이동
+        window.location.href = '/static/results.html';
+      };
+      reader.readAsDataURL(selectedFile);
+    };
+
+    // 학습 모델(신규)
+    document.getElementById('modelBtn').onclick = async function() {
+      if (!selectedFile) {
+        alert('이미지를 선택하세요!');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      // 이미지 미리보기 데이터 저장
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        sessionStorage.setItem('resultImage', e.target.result);
+        sessionStorage.setItem('resultFilePath', fileName);
+        // 1. EfficientNet 분류
+        const predictRes = await fetch('/predict', { method: 'POST', body: formData });
+        const predictData = await predictRes.json();
+        if (predictData.class) {
+          sessionStorage.setItem('predictClass', predictData.class);
+          // 2. results2.html로 이동 (분류 결과 기반 레시피)
+          window.location.href = '/static/results2.html';
+        } else {
+          alert('분류 실패: ' + (predictData.error || '알 수 없는 오류'));
+        }
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  </script>
+</body>
+</html>

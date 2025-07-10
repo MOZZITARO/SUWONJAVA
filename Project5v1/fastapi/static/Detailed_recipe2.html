@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상세 레시피 (모델 기반)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 20px; background: #ffffff; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: #2c3e50; color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 2.5em; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .content { display: flex; flex-wrap: wrap; gap: 30px; padding: 30px; }
+        .image-section { flex: 1; min-width: 300px; }
+        .image-section img { width: 100%; max-width: 500px; height: auto; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .analysis-section { flex: 1; min-width: 400px; }
+        .analysis-content { background: #f8f9fa; padding: 25px; border-radius: 10px; border-left: 5px solid #667eea; white-space: pre-wrap; font-size: 15px; line-height: 1.7; max-height: 700px; overflow-y: auto; }
+        .food-info { background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #6c757d; }
+        @media (max-width: 768px) { .content { flex-direction: column; } .header h1 { font-size: 2em; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="food-title">상세 레시피 (모델 기반)</h1>
+        </div>
+        <div class="content">
+            <div class="image-section">
+                <div class="food-info">
+                    <strong>음식:</strong> <span id="food-name"></span>
+                </div>
+                <img id="food-image" src="#" alt="완성 음식 이미지" style="display:none;" />
+            </div>
+            <div class="analysis-section">
+                <div class="analysis-content" id="detailed-recipe">
+                    <!-- 상세 레시피가 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    window.onload = function() {
+        const foodName = sessionStorage.getItem('detailedFoodName');
+        const fallbackImage = sessionStorage.getItem('detailedFoodImage');
+        const storedRecipe = sessionStorage.getItem('detailedRecipe');
+        console.log('SessionStorage data:', { foodName, fallbackImage, storedRecipe }); // 디버깅 로그
+        if (foodName) {
+            // 백엔드에 요리명으로 이미지+레시피 요청
+            fetch('/detailed-recipe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ food_name: foodName })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Backend response:', data); // 디버깅 로그
+                // robust하게 백엔드에서 받은 한글 요리명으로 제목/음식명 표시
+                const title = (data.food_name_ko || foodName) + ' 상세 레시피';
+                document.getElementById('food-title').textContent = title;
+                document.getElementById('food-name').textContent = data.food_name_ko || foodName;
+                // 이미지
+                if (data.image_base64 && data.image_base64 !== '') {
+                    document.getElementById('food-image').src = 'data:image/jpeg;base64,' + data.image_base64;
+                } else if (data.image_url && data.image_url !== '') {
+                    document.getElementById('food-image').src = data.image_url;
+                } else if (fallbackImage) {
+                    document.getElementById('food-image').src = fallbackImage;
+                }
+                document.getElementById('food-image').style.display = 'block';
+                // 레시피: sessionStorage의 detailedRecipe를 우선 사용
+                if (storedRecipe && storedRecipe !== 'undefined') {
+                    document.getElementById('detailed-recipe').innerHTML = storedRecipe;
+                } else if (data.recipe) {
+                    document.getElementById('detailed-recipe').innerHTML = data.recipe.replace(/\n/g, '<br>');
+                } else {
+                    document.getElementById('detailed-recipe').innerHTML = '레시피 정보가 없습니다.';
+                }
+            })
+            .catch(err => {
+                console.error('Backend error:', err); // 디버깅 로그
+                if (fallbackImage) {
+                    document.getElementById('food-image').src = fallbackImage;
+                    document.getElementById('food-image').style.display = 'block';
+                }
+                document.getElementById('food-title').textContent = foodName + ' 상세 레시피';
+                document.getElementById('food-name').textContent = foodName;
+                // 저장된 레시피가 있으면 표시
+                if (storedRecipe && storedRecipe !== 'undefined') {
+                    document.getElementById('detailed-recipe').innerHTML = storedRecipe;
+                } else {
+                    document.getElementById('detailed-recipe').innerHTML = '레시피 정보가 없습니다.';
+                }
+            });
+        } else {
+            console.error('No foodName in sessionStorage'); // 디버깅 로그
+            if (fallbackImage) {
+                document.getElementById('food-image').src = fallbackImage;
+                document.getElementById('food-image').style.display = 'block';
+            }
+            document.getElementById('detailed-recipe').innerHTML = '레시피 정보가 없습니다.';
+        }
+    }
+    </script>
+</body>
+</html>

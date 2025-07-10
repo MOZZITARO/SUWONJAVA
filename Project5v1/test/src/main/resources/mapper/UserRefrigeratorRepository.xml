@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="test.repository.UserRefrigeratorRepository">
+
+  <resultMap id="UserRefrigeratorResultMap" type="test.entity.UserRefrigerator">
+    <id property="indexNo" column="index_no"/>
+    <result property="userNo" column="user_no"/>
+    <result property="ingredient" column="ingredient"/>
+    <result property="purDate" column="pur_date"/>
+    <result property="usedCode" column="used_code"/>
+    <result property="regDate" column="reg_date"/>
+    <result property="udtDate" column="udt_date"/>
+  </resultMap>
+
+  <select id="findByUserNoAndUsedCode" resultMap="UserRefrigeratorResultMap">
+    SELECT * FROM user_refrigerator
+    WHERE user_no = #{userNo} AND used_code = #{usedCode}
+  </select>
+
+  <select id="findByUserNoAndIngredientAndPurDateAndUsedCode" resultMap="UserRefrigeratorResultMap">
+    SELECT * FROM user_refrigerator
+    WHERE user_no = #{userNo}
+      AND ingredient = #{ingredient}
+      AND pur_date = #{purDate}
+      AND used_code = #{usedCode}
+  </select>
+
+  <select id="findByUserNoAndIngredientAndUsedCode" resultMap="UserRefrigeratorResultMap">
+    SELECT * FROM user_refrigerator
+    WHERE user_no = #{userNo}
+      AND ingredient = #{ingredient}
+      AND used_code = #{usedCode}
+  </select>
+
+  <select id="findByUserNoAndPurDateAndUsedCode" resultMap="UserRefrigeratorResultMap">
+    SELECT * FROM user_refrigerator
+    WHERE user_no = #{userNo}
+      AND pur_date = #{purDate}
+      AND used_code = #{usedCode}
+  </select>
+
+  <select id="selectByIndexNo" resultMap="UserRefrigeratorResultMap">
+    SELECT * FROM user_refrigerator WHERE index_no = #{indexNo}
+  </select>
+
+  <insert id="insertUserRefrigerator" useGeneratedKeys="true" keyProperty="indexNo" keyColumn="index_no">
+    INSERT INTO user_refrigerator (user_no, ingredient, pur_date, used_code, reg_date, udt_date)
+    VALUES (#{userNo}, #{ingredient}, #{purDate}, #{usedCode}, #{regDate}, #{udtDate})
+  </insert>
+
+  <update id="updateUserRefrigerator">
+    UPDATE user_refrigerator
+    SET ingredient = #{ingredient},
+        pur_date = #{purDate},
+        used_code = #{usedCode},
+        udt_date = #{udtDate}
+    WHERE index_no = #{indexNo}
+  </update>
+
+  <delete id="deleteByIndexNo">
+    DELETE FROM user_refrigerator WHERE index_no = #{indexNo}
+  </delete>
+
+</mapper>
