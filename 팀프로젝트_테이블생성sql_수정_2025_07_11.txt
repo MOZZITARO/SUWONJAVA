@@ -1,0 +1,283 @@
+-- 프로젝트 - 냉장고를 부탁해 테이블 생성 sql (수정 버전)
+
+-- user 테이블
+CREATE TABLE users (
+    user_no BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL UNIQUE,
+    user_pw VARCHAR(500) NOT NULL,
+    user_name VARCHAR(50) NOT NULL,
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 유저 테이블 유저 비밀번호 컬럼 데이터 값 변경
+ALTER TABLE users MODIFY user_pw VARCHAR(500);
+
+-- 유저 테이블 관리자, 회원 구분 컬럼 추가
+ALTER TABLE users ADD COLUMN user_class char(1);
+ALTER TABLE users modify user_class int(1);
+
+-- user_LD1 테이블 (호불호 식재료)
+CREATE TABLE user_LD1 (
+    index_no BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_no BIGINT NOT NULL,
+    ingredient VARCHAR(50) NOT NULL,
+    preference CHAR(1) NOT NULL DEFAULT '1',
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT chk_preference_ld1 CHECK (preference IN ('0', '1'))
+);
+
+-- user_LD2 테이블 (호불호 음식)
+CREATE TABLE user_LD2 (
+    index_no BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_no BIGINT NOT NULL,
+    food VARCHAR(50) NOT NULL,
+    preference CHAR(1) NOT NULL DEFAULT '1',
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT chk_preference_ld2 CHECK (preference IN ('0', '1'))
+);
+
+-- user_refrigerator 테이블 (냉장고)
+CREATE TABLE user_refrigerator (
+    index_no BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_no BIGINT NOT NULL,
+    ingredient VARCHAR(50) NOT NULL,
+    pur_date DATETIME,
+    used_code CHAR(1) NOT NULL DEFAULT '0',
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT chk_delete_code CHECK (used_code IN ('0', '1'))
+);
+
+-- user_recipe 테이블 (사용자 레시피 이력)
+CREATE TABLE user_recipe (
+    index_no BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_no BIGINT NOT NULL,
+    food VARCHAR(50) NOT NULL,
+    rec_date DATETIME NOT NULL,
+    ingredient VARCHAR(200),
+    calorie INTEGER,
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- user_recipe 테이블에 recipe_id 컬럼 추가
+alter table user_recipe add column recipe_id bigint null after food;
+
+-- user_recipe 테이블의 recipe_id 컬럼에 외래키 제약 조건 추가
+alter table user_recipe add constraint fk_user_recipe_recipe foreign key (recipe_id) references recipe(recipe_id)
+on delete set null;
+
+-- recipe 테이블 (레시피)
+CREATE TABLE recipe (
+    recipe_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    cooking_method VARCHAR(100),
+    name VARCHAR(100) NOT NULL,
+    cuisine_type VARCHAR(100),
+    calories INTEGER,
+    info_wgt INTEGER,
+    info_car INTEGER,
+    info_fat INTEGER,
+    info_na INTEGER,
+    info_pro INTEGER,
+    hash_tag VARCHAR(100),
+    image_main_url VARCHAR(512),
+    image_thumbnail_url VARCHAR(512),
+    tip TEXT,
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ingredient 테이블 (레시피 재료)
+CREATE TABLE ingredient (
+    ingredient_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    recipe_id BIGINT NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    quantity VARCHAR(100),
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (recipe_id) REFERENCES recipe(recipe_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+ALTER TABLE ingredient
+ADD COLUMN description VARCHAR(100) DEFAULT '' AFTER quantity;
+
+-- instruction 테이블 (레시피 설명)
+CREATE TABLE instruction (
+    instruction_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    recipe_id BIGINT NOT NULL,
+    step_num INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    image_url VARCHAR(512),
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (recipe_id) REFERENCES recipe(recipe_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- post 테이블 (게시판)
+CREATE TABLE post (
+    post_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_no BIGINT NOT NULL,
+    category VARCHAR(50),
+    title VARCHAR(50) NOT NULL,
+    content VARCHAR(2000) NOT NULL,
+    author VARCHAR(50) NOT NULL,
+    views BIGINT DEFAULT 0,
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- comment 테이블 (댓글)
+CREATE TABLE comment (
+    comment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_no BIGINT NOT NULL,
+    author VARCHAR(50) NOT NULL,
+    post_id BIGINT NOT NULL,
+    content VARCHAR(200) NOT NULL,
+    parent_id BIGINT,
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+-- comment 외래키 설정
+ALTER TABLE comment ADD CONSTRAINT fk_parent_comment
+FOREIGN KEY (parent_id) REFERENCES comment(comment_id) ON DELETE SET NULL;
+
+-- file 테이블 (첨부파일)   // 안 쓰는 테이블
+CREATE TABLE file (
+    file_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_no BIGINT NOT NULL,
+    post_id BIGINT NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(1000) NOT NULL,
+    file_size BIGINT NOT NULL,
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- file 테이블 (첨부파일, 이미지 통합)
+CREATE TABLE file (
+    file_id BIGINT AUTO_INCREMENT PRIMARY KEY, -- 파일 고유 ID
+    user_no BIGINT NOT NULL, -- 업로드한 사용자
+    post_id BIGINT NOT NULL, -- 연결된 게시물 ID
+    file_name VARCHAR(255) NOT NULL, -- 원본 파일 이름
+    file_path VARCHAR(1000) NOT NULL, -- 저장 경로
+    file_size BIGINT NOT NULL, -- 파일 크기 (바이트)
+    file_type VARCHAR(20) NOT NULL, -- 파일 유형 (예: 'image', 'document')
+    width INT, -- 이미지 너비 (픽셀, 이미지일 경우 사용)
+    height INT, -- 이미지 높이 (픽셀, 이미지일 경우 사용)
+    thumbnail_path VARCHAR(1000), -- 썸네일 경로 (이미지일 경우 사용)
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- 생성 시간
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 갱신 시간
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX idx_post_id (post_id), -- 게시물별 조회 최적화
+    INDEX idx_user_no (user_no) -- 사용자별 조회 최적화
+)
+
+-- chatbot 테이블 (챗봇 대화 기록)  // 안 쓰는 테이블
+CREATE TABLE chatbot (
+    chat_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_no BIGINT NOT NULL,
+    message TEXT,
+    response TEXT,
+    date DATETIME,
+    reg_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- 유저 로그인 로그 저장 테이블
+CREATE TABLE login_log (
+    log_id BIGINT AUTO_INCREMENT PRIMARY KEY, -- 로그 고유 ID
+     user_no BIGINT NOT NULL,
+    user_id VARCHAR(50) NOT NULL, -- 로그인한 사용자 ID (외래 키로 참조 가능)
+    login_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 로그인 시도 시간
+    login_status VARCHAR(10) NOT NULL, -- 성공/실패 (예: 'SUCCESS', 'FAIL')
+    ip_address VARCHAR(45) NOT NULL, -- 클라이언트 IP 주소 (IPv6 지원)
+    user_agent VARCHAR(255), -- 브라우저/디바이스 정보 (선택)
+    reg_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 생성 시간
+    udt_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 갱신 시간
+    INDEX idx_user_id (user_id), -- 사용자 ID로 조회 최적화
+    INDEX idx_login_time (login_time), -- 시간별 조회 최적화
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- ollama가 만든 설명을 레시피, 유저, 시간별로 저장
+CREATE TABLE chat_description (
+    seq INT NOT NULL AUTO_INCREMENT,  -- 자동 증가 순서, 단독 기본 키
+    user_no BIGINT NOT NULL,
+    recipe_id BIGINT NOT NULL,
+    ollama_description TEXT NOT NULL,
+    time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,  -- 최신 여부
+    PRIMARY KEY (seq),  -- seq를 단독 기본 키로 설정
+    UNIQUE (user_no, recipe_id, time),  -- user_no, recipe_id, time으로 고유성 보장
+    FOREIGN KEY (recipe_id) REFERENCES recipe(recipe_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE CASCADE
+);
+
+-- chat_description 테이블 (기존 수정)
+ALTER TABLE chat_description 
+    ADD COLUMN session_id VARCHAR(36) NULL,
+    ADD FOREIGN KEY (session_id) REFERENCES chat_sessions(session_id) ON DELETE SET NULL;
+
+-- chat_sessions 테이블
+CREATE TABLE chat_sessions (
+    session_id VARCHAR(36) PRIMARY KEY,
+    user_no bigINT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_active DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    FOREIGN KEY (user_no) REFERENCES users(user_no) ON DELETE SET NULL
+);
+
+-- chat_messages 테이블
+CREATE TABLE chat_messages (
+    message_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    session_id VARCHAR(36) NOT NULL,
+    sender ENUM('user', 'bot') NOT NULL,
+    content TEXT NOT NULL,
+    timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    recipe_id bigINT NULL,
+    FOREIGN KEY (session_id) REFERENCES chat_sessions(session_id) ON DELETE CASCADE,
+    FOREIGN KEY (recipe_id) REFERENCES recipe(recipe_id) ON DELETE SET null
+);
+
+
+-- 외부에서 접속
+-- 유저 생성
+CREATE USER 'team1'@'%' IDENTIFIED BY 'team1';
+
+-- 권한 부여
+GRANT ALL PRIVILEGES ON test.* TO 'team1'@'%';
+FLUSH PRIVILEGES;
+
+-- 유저 확인
+SELECT User, Host FROM mysql.user;
+
+-- 권한 확인
+SHOW GRANTS FOR 'team1'@'%';
+
+
+-- 인덱스 추가 (선택적 최적화)
+CREATE INDEX idx_user_ld1_user_no ON user_LD1(user_no);
+CREATE INDEX idx_user_ld2_user_no ON user_LD2(user_no);
+CREATE INDEX idx_user_refrigerator_user_no ON user_refrigerator(user_no);
+CREATE INDEX idx_user_recipe_user_no ON user_recipe(user_no);
+CREATE INDEX idx_ingredient_recipe_id ON ingredient(recipe_id);
+CREATE INDEX idx_instruction_recipe_id ON instruction(recipe_id);
+CREATE INDEX idx_post_user_no ON post(user_no);
+CREATE INDEX idx_comment_user_no_post_id ON comment(user_no, post_id);
+CREATE INDEX idx_file_user_no_post_id ON file(user_no, post_id);
+CREATE INDEX idx_chatbot_user_no ON chatbot(user_no);     // 안 쓰는 테이블의 인덱스
